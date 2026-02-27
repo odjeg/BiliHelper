@@ -304,27 +304,45 @@ class _LotteryPageState extends State<LotteryPage> {
           dynamic_id_str: item.business_id,
           up: 1,
         );
+        if (thumbResponse.statusCode == 200 &&
+            thumbResponse.data['code'] == 0) {
+          developer.log('点赞: ${thumbResponse.data}');
+        } else {
+          developer.log('点赞失败: ${thumbResponse.data}');
+        }
         var replyResponse = await api.userReplyAdd(
           oid: item.comment_id_str!,
           message: '我我我',
           type: 11,
         );
-        developer.log('点赞: ${thumbResponse.data}');
-        developer.log('评论: ${replyResponse.data}');
-        if (item.isForward == '已转发') continue;
-        var respostResponse = await api.repostDynamic(
-          data: {
-            'type': 1,
-            'scene': 4,
-            'dyn_id_str': item.business_id,
-            'raw_text': '转发抽奖',
-          },
-        );
+        if (replyResponse.statusCode == 200 &&
+            replyResponse.data['code'] == 0) {
+          developer.log('评论: ${replyResponse.data}');
+        } else {
+          developer.log('评论失败: ${replyResponse.data}');
+        }
+        if (item.isForward == '未转发') {
+          var respostResponse = await api.repostDynamic(
+            data: {
+              'type': 1,
+              'scene': 4,
+              'dyn_id_str': item.business_id,
+              'raw_text': '转发抽奖',
+            },
+          );
+          if (respostResponse.statusCode == 200 &&
+              respostResponse.data['code'] == 0) {
+            developer.log('转发: ${respostResponse.data}');
+          } else {
+            developer.log('转发失败: ${respostResponse.data}');
+          }
+        }
+
         item.isForward = '转赞评';
         userLotteryInfoDataSource.notifyListeners();
       }
       if (flag) {
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 5));
       }
     }
     lotteryController.title.value = '抽奖完成';

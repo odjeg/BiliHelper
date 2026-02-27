@@ -26,7 +26,6 @@ class CookieGenerator {
     String t = e.toRadixString(16).toUpperCase();
 
     // 拼接最终的LSID
-    developer.log('genBLsid');
     return "${result}_$t";
   }
 
@@ -43,7 +42,6 @@ class CookieGenerator {
     timeSec = timeSec.padLeft(5, '0');
 
     // 4. 拼接最终结果
-    developer.log('genUuid');
     return "$uuidSec${timeSec}infoc";
   }
 
