@@ -1,3 +1,6 @@
+import 'package:bilibilihelper/controllers/dynamic_controller.dart';
+import 'package:bilibilihelper/controllers/followings_controller.dart';
+import 'package:bilibilihelper/controllers/lottery_controller.dart';
 import 'package:bilibilihelper/pages/home_page.dart';
 import 'package:bilibilihelper/pages/log_in_page.dart';
 import 'package:bilibilihelper/services/secure_storage_service.dart';
@@ -5,6 +8,7 @@ import 'package:bilibilihelper/utils/bili_x_api.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,7 +16,16 @@ void main() async {
   await api.initDio();
 
   bool islogin = sessdata != null;
-  runApp(MyApp(islogin: islogin));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => FollowingsController()),
+        ChangeNotifierProvider(create: (context) => DynamicController()),
+        ChangeNotifierProvider(create: (context) => LotteryController()),
+      ],
+      child: MyApp(islogin: islogin),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

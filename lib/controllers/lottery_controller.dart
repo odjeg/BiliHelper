@@ -1,9 +1,7 @@
-import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 
-class LotteryController extends GetxController {
-  RxBool isLoading = false.obs;
-  RxString title = ''.obs;
-  RxInt total = 0.obs;
+class LotteryController extends ChangeNotifier {
+  bool isLoading = false;
+  String title = '';
+  int total = 0;
 }
-
-final LotteryController lotteryController = Get.put(LotteryController());

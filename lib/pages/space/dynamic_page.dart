@@ -5,6 +5,7 @@ import 'package:bilibilihelper/userdata/user_dynamic_info.dart';
 import 'package:bilibilihelper/utils/bili_x_api.dart';
 import 'package:bilibilihelper/utils/wbi_generator.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class DynamicPage extends StatefulWidget {
@@ -22,9 +23,8 @@ class _DynamicPageState extends State<DynamicPage>
       appBar: AppBar(
         title: Text('我的动态'),
         actions: [
-          ListenableBuilder(
-            listenable: dynamicController,
-            builder: (context, child) => IconButton(
+          Consumer<DynamicController>(
+            builder: (context, dynamicController, child) => IconButton(
               icon: dynamicController.isLoading
                   ? CircularProgressIndicator(
                       strokeWidth: 5,
@@ -38,9 +38,9 @@ class _DynamicPageState extends State<DynamicPage>
                   return;
                 }
 
-                developer.log('刷新关注列表');
+                developer.log('刷新动态列表');
                 dynamicController.isLoading = true;
-                initDynamicInfo();
+                initDynamicInfo(dynamicController);
               },
             ),
           ),
@@ -122,7 +122,7 @@ class _DynamicPageState extends State<DynamicPage>
     );
   }
 
-  Future<void> initDynamicInfo() async {
+  Future<void> initDynamicInfo(DynamicController dynamicController) async {
     String? host_mid = await SecureStorageService.getToken('DedeUserID');
     developer.log(host_mid!);
     developer.log('initDynamicInfo');

@@ -44,6 +44,7 @@ dependencies:
   url_launcher: ^6.3.2
   uuid: ^4.5.3
   crypto: ^3.0.7
+  provider: ^6.1.5
 
 
 

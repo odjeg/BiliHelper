@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:developer' as developer;
 import 'package:bilibilihelper/userdata/user_lottery_info.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'dart:core';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:bilibilihelper/controllers/lottery_controller.dart';
@@ -22,21 +22,51 @@ class _LotteryPageState extends State<LotteryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Obx(() => Text('我的抽奖 ${lotteryController.title.value}')),
+        // title: Obx(() => Text('我的抽奖 ${lotteryController.title.value}')),
+        // actions: [
+        //   Obx(
+        //     () => lotteryController.isLoading.value
+        //         ? CircularProgressIndicator()
+        //         : IconButton(
+        //             icon: Icon(Icons.refresh),
+        //             onPressed: () async {
+        //               lotteryController.isLoading.value = true;
+        //               await _getClipboardText().then(
+        //                 (value) =>
+        //                     _getLotteryInfo().then((value) => _startLottery()),
+        //               );
+        //             },
+        //           ),
+        //   ),
+        // ],
+        title: Consumer<LotteryController>(
+          builder: (context, lotteryController, child) => Text(
+            '我的抽奖 ${lotteryController.title}',
+            style: TextStyle(fontFamily: 'Noto Sans SC'),
+          ),
+        ),
         actions: [
-          Obx(
-            () => lotteryController.isLoading.value
-                ? CircularProgressIndicator()
-                : IconButton(
-                    icon: Icon(Icons.refresh),
-                    onPressed: () async {
-                      lotteryController.isLoading.value = true;
-                      await _getClipboardText().then(
-                        (value) =>
-                            _getLotteryInfo().then((value) => _startLottery()),
-                      );
-                    },
-                  ),
+          Consumer<LotteryController>(
+            builder: (context, lotteryController, child) => IconButton(
+              icon: lotteryController.isLoading
+                  ? CircularProgressIndicator(
+                      strokeWidth: 5,
+                      value: lotteryController.total == 0
+                          ? 0.0
+                          : userLotteryInfoList.length /
+                                lotteryController.total,
+                    )
+                  : Icon(Icons.refresh, size: 45),
+              onPressed: () async {
+                if (lotteryController.isLoading) {
+                  return;
+                }
+
+                developer.log('刷新抽奖列表');
+                lotteryController.isLoading = true;
+                _startLottery(lotteryController);
+              },
+            ),
           ),
         ],
       ),
@@ -118,9 +148,9 @@ class _LotteryPageState extends State<LotteryPage> {
     );
   }
 
-  Future<void> _getClipboardText() async {
+  Future<void> _getClipboardText(LotteryController lotteryController) async {
     userLotteryInfoList.clear();
-    lotteryController.title.value = '正在获取抽奖动态...';
+    lotteryController.title = '正在获取抽奖动态...';
     ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
     //developer.log(data?.text ?? '');
     final RegExp opusIdRegex = RegExp(
@@ -133,15 +163,15 @@ class _LotteryPageState extends State<LotteryPage> {
       userLotteryInfoList.add(UserLotteryInfo(business_id: opusId));
     }
     userLotteryInfoDataSource.notifyListeners();
-    lotteryController.title.value = '获取到${userLotteryInfoList.length}个抽奖动态ID';
+    lotteryController.title = '获取到${userLotteryInfoList.length}个抽奖动态ID';
   }
 
-  Future<void> _getLotteryInfo() async {
-    lotteryController.title.value = '正在获取抽奖信息...';
+  Future<void> _getLotteryInfo(LotteryController lotteryController) async {
+    lotteryController.title = '正在获取抽奖信息...';
     String csrf =
         await SecureStorageService.getToken('bili_jct') ?? 'lottery csrf null';
     for (var item in userLotteryInfoList) {
-      lotteryController.title.value = '正在获取抽奖动态详情...${item.business_id}';
+      lotteryController.title = '正在获取抽奖动态详情...${item.business_id}';
       var pageDetailResponse = await api.get(
         '/polymer/web-dynamic/v1/detail',
         queryParameters: {'id': item.business_id},
@@ -240,13 +270,15 @@ class _LotteryPageState extends State<LotteryPage> {
       }
       await Future.delayed(const Duration(seconds: 2));
     }
-    lotteryController.title.value = '抽奖信息获取完成';
+    lotteryController.title = '抽奖信息获取完成';
   }
 
-  Future<void> _startLottery() async {
+  Future<void> _startLottery(LotteryController lotteryController) async {
+    await _getClipboardText(lotteryController);
+    await _getLotteryInfo(lotteryController);
     for (var item in userLotteryInfoList) {
       bool flag = false;
-      lotteryController.title.value = '正在开始抽奖...${item.business_id}';
+      lotteryController.title = '正在开始抽奖...${item.business_id}';
       if (item.lotteryType == '互动抽奖') {
         developer.log(DateTime.now().toString());
         if (DateTime.fromMillisecondsSinceEpoch(
@@ -345,7 +377,7 @@ class _LotteryPageState extends State<LotteryPage> {
         await Future.delayed(const Duration(seconds: 5));
       }
     }
-    lotteryController.title.value = '抽奖完成';
-    lotteryController.isLoading.value = false;
+    lotteryController.title = '抽奖完成';
+    lotteryController.isLoading = false;
   }
 }

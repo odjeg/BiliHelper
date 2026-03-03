@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class DynamicController extends ChangeNotifier {
   bool _isLoading = false;
@@ -15,5 +15,3 @@ class DynamicController extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-final dynamicController = DynamicController();

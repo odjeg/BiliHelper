@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class FollowingsController extends ChangeNotifier {
   bool _isLoading = false;
@@ -15,5 +15,3 @@ class FollowingsController extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-final followingsController = FollowingsController();

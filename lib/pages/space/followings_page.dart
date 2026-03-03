@@ -5,6 +5,7 @@ import 'package:bilibilihelper/userdata/user_following_info.dart';
 import 'package:bilibilihelper/utils/bili_x_api.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class FollowingsPage extends StatefulWidget {
@@ -20,9 +21,8 @@ class _FollowingsPageState extends State<FollowingsPage> {
       appBar: AppBar(
         title: Text('我的关注', style: TextStyle(fontFamily: 'Noto Sans SC')),
         actions: [
-          ListenableBuilder(
-            listenable: followingsController,
-            builder: (context, child) => IconButton(
+          Consumer<FollowingsController>(
+            builder: (context, followingsController, child) => IconButton(
               icon: followingsController.isLoading
                   ? CircularProgressIndicator(
                       strokeWidth: 5,
@@ -38,7 +38,7 @@ class _FollowingsPageState extends State<FollowingsPage> {
 
                 developer.log('刷新关注列表');
                 followingsController.isLoading = true;
-                initFollowingList();
+                initFollowingList(followingsController);
               },
             ),
           ),
@@ -106,7 +106,9 @@ class _FollowingsPageState extends State<FollowingsPage> {
     );
   }
 
-  Future<void> initFollowingList() async {
+  Future<void> initFollowingList(
+    FollowingsController followingsController,
+  ) async {
     followingList.clear();
     userFollowingInfoSource.notifyListeners();
     int pn = 0;
