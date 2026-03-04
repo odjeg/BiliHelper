@@ -47,21 +47,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: PreferredSize(
-      //   preferredSize: const Size.fromHeight(kToolbarHeight),
-      //   child: GetBuilder<AppBarController>(
-      //     builder: (appBarController) {
-      //       return AppBar(
-      //         title: appBarController.title.value,
-      //         backgroundColor: appBarController.backgroundColor.,
-      //         actions: appBarController.actions,
-      //       );
-      //     },
-      //   ),
-      // ),
       appBar: AppBar(
         title: Obx(() => Text('欢迎： ${uname.value}')),
-        // 用AnimatedContainer承载Color，Obx放在child里（接收Widget）
         backgroundColor: Colors.purple[100],
       ),
 
@@ -73,7 +60,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Obx(
                   () => UserAccountsDrawerHeader(
-                    decoration: BoxDecoration(color: Colors.blue),
+                    decoration: BoxDecoration(color: Colors.blue[200]),
                     currentAccountPicture: CircleAvatar(
                       backgroundImage: NetworkImage(imageUrl.value),
                     ),

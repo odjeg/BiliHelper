@@ -22,23 +22,6 @@ class _LotteryPageState extends State<LotteryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: Obx(() => Text('我的抽奖 ${lotteryController.title.value}')),
-        // actions: [
-        //   Obx(
-        //     () => lotteryController.isLoading.value
-        //         ? CircularProgressIndicator()
-        //         : IconButton(
-        //             icon: Icon(Icons.refresh),
-        //             onPressed: () async {
-        //               lotteryController.isLoading.value = true;
-        //               await _getClipboardText().then(
-        //                 (value) =>
-        //                     _getLotteryInfo().then((value) => _startLottery()),
-        //               );
-        //             },
-        //           ),
-        //   ),
-        // ],
         title: Consumer<LotteryController>(
           builder: (context, lotteryController, child) => Text(
             '我的抽奖 ${lotteryController.title}',
@@ -47,27 +30,27 @@ class _LotteryPageState extends State<LotteryPage> {
         ),
         actions: [
           Consumer<LotteryController>(
-            builder: (context, lotteryController, child) => IconButton(
-              icon: lotteryController.isLoading
-                  ? CircularProgressIndicator(
-                      strokeWidth: 5,
-                      value: lotteryController.total == 0
-                          ? 0.0
-                          : userLotteryInfoList.length /
-                                lotteryController.total,
-                    )
-                  : Icon(Icons.refresh, size: 45),
-              onPressed: () async {
-                if (lotteryController.isLoading) {
-                  return;
-                }
+            builder: (context, lotteryController, child) =>
+                lotteryController.isLoading
+                ? CircularProgressIndicator(
+                    value: lotteryController.total == 0
+                        ? 0.0
+                        : userLotteryInfoList.length / lotteryController.total,
+                  )
+                : IconButton(
+                    icon: Icon(Icons.refresh),
+                    onPressed: () async {
+                      if (lotteryController.isLoading) {
+                        return;
+                      }
 
-                developer.log('刷新抽奖列表');
-                lotteryController.isLoading = true;
-                _startLottery(lotteryController);
-              },
-            ),
+                      developer.log('刷新抽奖列表');
+                      lotteryController.isLoading = true;
+                      _startLottery(lotteryController);
+                    },
+                  ),
           ),
+          SizedBox(width: 10),
         ],
       ),
       body: SfDataGrid(

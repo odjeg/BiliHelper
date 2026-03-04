@@ -24,26 +24,27 @@ class _DynamicPageState extends State<DynamicPage>
         title: Text('我的动态'),
         actions: [
           Consumer<DynamicController>(
-            builder: (context, dynamicController, child) => IconButton(
-              icon: dynamicController.isLoading
-                  ? CircularProgressIndicator(
-                      strokeWidth: 5,
-                      value: dynamicController.total == 0
-                          ? 0.0
-                          : dynamicController.total / 200.0,
-                    )
-                  : Icon(Icons.refresh, size: 45),
-              onPressed: () async {
-                if (dynamicController.isLoading) {
-                  return;
-                }
+            builder: (context, dynamicController, child) =>
+                dynamicController.isLoading
+                ? CircularProgressIndicator(
+                    value: dynamicController.total == 0
+                        ? 0.0
+                        : dynamicController.total / 200.0,
+                  )
+                : IconButton(
+                    icon: Icon(Icons.refresh),
+                    onPressed: () async {
+                      if (dynamicController.isLoading) {
+                        return;
+                      }
 
-                developer.log('刷新动态列表');
-                dynamicController.isLoading = true;
-                initDynamicInfo(dynamicController);
-              },
-            ),
+                      developer.log('刷新动态列表');
+                      dynamicController.isLoading = true;
+                      initDynamicInfo(dynamicController);
+                    },
+                  ),
           ),
+          SizedBox(width: 10),
         ],
       ),
       body: SfDataGrid(

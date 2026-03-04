@@ -22,26 +22,27 @@ class _FollowingsPageState extends State<FollowingsPage> {
         title: Text('我的关注', style: TextStyle(fontFamily: 'Noto Sans SC')),
         actions: [
           Consumer<FollowingsController>(
-            builder: (context, followingsController, child) => IconButton(
-              icon: followingsController.isLoading
-                  ? CircularProgressIndicator(
-                      strokeWidth: 5,
-                      value: followingsController.total == 0
-                          ? 0.0
-                          : followingList.length / followingsController.total,
-                    )
-                  : Icon(Icons.refresh, size: 45),
-              onPressed: () async {
-                if (followingsController.isLoading) {
-                  return;
-                }
+            builder: (context, followingsController, child) =>
+                followingsController.isLoading
+                ? CircularProgressIndicator(
+                    value: followingsController.total == 0
+                        ? 0.0
+                        : followingList.length / followingsController.total,
+                  )
+                : IconButton(
+                    icon: Icon(Icons.refresh),
+                    onPressed: () async {
+                      if (followingsController.isLoading) {
+                        return;
+                      }
 
-                developer.log('刷新关注列表');
-                followingsController.isLoading = true;
-                initFollowingList(followingsController);
-              },
-            ),
+                      developer.log('刷新关注列表');
+                      followingsController.isLoading = true;
+                      initFollowingList(followingsController);
+                    },
+                  ),
           ),
+          SizedBox(width: 10),
         ],
       ),
       body: Padding(
