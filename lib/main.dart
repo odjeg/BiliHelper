@@ -12,10 +12,15 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  String? sessdata = await SecureStorageService.getToken('SESSDATA');
   await api.initDio();
 
-  bool islogin = sessdata != null;
+  var response = await api.get(
+    'https://passport.bilibili.com/x/passport-login/web/cookie/info',
+    queryParameters: {'csrf': await SecureStorageService.getToken('bili_jct')},
+  );
+
+  bool islogin = response.data['data']['refresh'];
+
   runApp(
     MultiProvider(
       providers: [
