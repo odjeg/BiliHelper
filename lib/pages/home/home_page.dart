@@ -1,16 +1,11 @@
 import 'dart:developer' as developer;
-import 'package:bilibilihelper/pages/space/dynamic_page.dart';
-import 'package:bilibilihelper/pages/space/followings_page.dart';
-import 'package:bilibilihelper/pages/log_in_page.dart';
-import 'package:bilibilihelper/pages/space/lottery_page.dart';
-import 'package:bilibilihelper/services/secure_storage_service.dart';
-import 'package:bilibilihelper/userdata/user_dynamic_info.dart';
-import 'package:bilibilihelper/userdata/user_following_info.dart';
-import 'package:bilibilihelper/userdata/user_lottery_info.dart';
+import 'package:bilibilihelper/pages/home/my_nav_rail.dart';
+import 'package:bilibilihelper/pages/live/live_page.dart';
+import 'package:bilibilihelper/pages/space/space_page.dart';
 import 'package:bilibilihelper/utils/bili_x_api.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' hide Response;
+import 'package:bilibilihelper/pages/home/home_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,14 +15,37 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  RxString imageUrl = ''.obs;
-  RxString uname = ''.obs;
-  RxString mid = ''.obs;
-
   @override
   void initState() {
     super.initState();
     _initMyInfo();
+  }
+
+  int _selectedIndex = 0;
+  final List<Widget> _pages = [SpacePage(), LivePage()];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        children: [
+          MyNavRail(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+          ),
+          Expanded(
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              child: _pages[_selectedIndex],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _initMyInfo() async {
@@ -39,14 +57,17 @@ class _HomePageState extends State<HomePage> {
     );
     //developer.log(response.data.toString());
     // json解析response.data
-    imageUrl.value = response.data['data']['profile']['face'].toString();
-    uname.value = response.data['data']['profile']['name'].toString();
-    mid.value = response.data['data']['profile']['mid'].toString();
+    homeController.imageUrl.value = response.data['data']['profile']['face']
+        .toString();
+    homeController.uname.value = response.data['data']['profile']['name']
+        .toString();
+    homeController.mid.value = response.data['data']['profile']['mid']
+        .toString();
   }
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+/*
+Scaffold(
       appBar: AppBar(
         title: Obx(() => Text('欢迎： ${uname.value}')),
         backgroundColor: Colors.purple[100],
@@ -133,5 +154,4 @@ class _HomePageState extends State<HomePage> {
         child: Image.asset('assets/image/empty.png', fit: BoxFit.cover),
       ),
     );
-  }
-}
+*/

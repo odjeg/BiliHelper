@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:async';
-import 'package:bilibilihelper/pages/home_page.dart';
+import 'package:bilibilihelper/pages/home/home_page.dart';
 import 'package:bilibilihelper/services/secure_storage_service.dart';
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
@@ -78,7 +78,6 @@ class _LogInPageState extends State<LogInPage> {
 
         // ✅ 修复：响应式变量必须用 .value 赋值
         message.value = (value['data']['message'] ?? '') + '${DateTime.now()}';
-        log(value.toString());
 
         if (value['data']['code'] == 0) {
           _timer?.cancel();

@@ -1,3 +1,4 @@
+import 'package:bilibilihelper/controllers/load_status.dart';
 import 'package:bilibilihelper/services/secure_storage_service.dart';
 import 'package:bilibilihelper/userdata/user_dynamic_info.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'dart:developer' as developer;
 import 'package:bilibilihelper/userdata/user_lottery_info.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import 'dart:core';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:bilibilihelper/controllers/lottery_controller.dart';
@@ -21,109 +23,142 @@ class _LotteryPageState extends State<LotteryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Consumer<LotteryController>(
-          builder: (context, lotteryController, child) => Text(
-            '我的抽奖 ${lotteryController.title}',
-            style: TextStyle(fontFamily: 'Noto Sans SC'),
-          ),
-        ),
-        actions: [
-          Consumer<LotteryController>(
-            builder: (context, lotteryController, child) =>
-                lotteryController.isLoading
-                ? CircularProgressIndicator(
-                    value: lotteryController.total == 0
-                        ? 0.0
-                        : userLotteryInfoList.length / lotteryController.total,
-                  )
-                : IconButton(
-                    icon: Icon(Icons.refresh),
-                    onPressed: () async {
-                      if (lotteryController.isLoading) {
-                        return;
-                      }
-
-                      developer.log('刷新抽奖列表');
-                      lotteryController.isLoading = true;
-                      _startLottery(lotteryController);
-                    },
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 100,
+                height: 50,
+                margin: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.purple[200]!,
+                      offset: Offset(0, 1),
+                      blurRadius: 1.0,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Consumer<LotteryController>(
+                    builder: (context, lotteryController, child) => Text(
+                      '已获取抽奖\n${lotteryController.total}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
+                    ),
                   ),
-          ),
-          SizedBox(width: 10),
-        ],
-      ),
-      body: SfDataGrid(
-        source: userLotteryInfoDataSource,
-        headerGridLinesVisibility: GridLinesVisibility.both,
-        gridLinesVisibility: GridLinesVisibility.both,
-        columnWidthMode: ColumnWidthMode.fill,
-        selectionMode: SelectionMode.single,
-        rowHeight: 25,
-        headerRowHeight: 30,
-        allowSorting: true,
-        columns: [
-          GridColumn(
-            columnName: 'business_id',
-            label: Container(
-              alignment: Alignment.center,
-              child: Text(
-                '抽奖动态ID',
-                style: TextStyle(fontFamily: 'Noto Sans SC'),
+                ),
               ),
-            ),
+              Consumer<LotteryController>(
+                builder: (context, lotteryController, child) => IconButton(
+                  icon: Icon(Icons.refresh),
+                  tooltip: '开始抽奖',
+                  onPressed: lotteryController.loadStatus == LoadStatus.loading
+                      ? null
+                      : () async {
+                          lotteryController.loadStatus = LoadStatus.loading;
+                          _startLottery(lotteryController);
+                        },
+                  highlightColor: Colors.pink[100],
+                  hoverColor: Colors.pink[50],
+                ),
+              ),
+            ],
           ),
-          GridColumn(
-            columnName: 'mid',
-            label: Container(
-              alignment: Alignment.center,
-              child: Text('UID', style: TextStyle(fontFamily: 'Noto Sans SC')),
-            ),
-          ),
+          Expanded(
+            child: SfDataGridTheme(
+              data: SfDataGridThemeData(gridLineColor: Colors.white),
+              child: SfDataGrid(
+                source: userLotteryInfoDataSource,
+                headerGridLinesVisibility: GridLinesVisibility.vertical,
+                gridLinesVisibility: GridLinesVisibility.vertical,
+                columnWidthMode: ColumnWidthMode.fill,
+                selectionMode: SelectionMode.single,
+                rowHeight: 25,
+                headerRowHeight: 30,
+                allowSorting: true,
+                columns: [
+                  GridColumn(
+                    columnName: 'business_id',
+                    label: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '抽奖动态ID',
+                        style: TextStyle(fontFamily: 'Noto Sans SC'),
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    columnName: 'mid',
+                    label: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'UID',
+                        style: TextStyle(fontFamily: 'Noto Sans SC'),
+                      ),
+                    ),
+                  ),
 
-          GridColumn(
-            columnName: 'name',
-            label: Container(
-              alignment: Alignment.center,
-              child: Text('用户名', style: TextStyle(fontFamily: 'Noto Sans SC')),
-            ),
-          ),
-          GridColumn(
-            columnName: 'followed',
-            allowSorting: false,
-            label: Container(
-              alignment: Alignment.center,
-              child: Text(
-                '是否已关注',
-                style: TextStyle(fontFamily: 'Noto Sans SC'),
-              ),
-            ),
-          ),
-          GridColumn(
-            columnName: 'lottery_time',
-            label: Container(
-              alignment: Alignment.center,
-              child: Text('开奖时间', style: TextStyle(fontFamily: 'Noto Sans SC')),
-            ),
-          ),
-          GridColumn(
-            columnName: 'isForward',
-            allowSorting: false,
-            label: Container(
-              alignment: Alignment.center,
-              child: Text(
-                '是否已转发/预约',
-                style: TextStyle(fontFamily: 'Noto Sans SC'),
-              ),
-            ),
-          ),
+                  GridColumn(
+                    columnName: 'name',
+                    label: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '用户名',
+                        style: TextStyle(fontFamily: 'Noto Sans SC'),
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    columnName: 'followed',
+                    allowSorting: false,
+                    label: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '是否已关注',
+                        style: TextStyle(fontFamily: 'Noto Sans SC'),
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    columnName: 'lottery_time',
+                    label: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '开奖时间',
+                        style: TextStyle(fontFamily: 'Noto Sans SC'),
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    columnName: 'isForward',
+                    allowSorting: false,
+                    label: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '是否已转发/预约',
+                        style: TextStyle(fontFamily: 'Noto Sans SC'),
+                      ),
+                    ),
+                  ),
 
-          GridColumn(
-            columnName: 'lotteryType',
-            allowSorting: false,
-            label: Container(
-              alignment: Alignment.center,
-              child: Text('抽奖类型', style: TextStyle(fontFamily: 'Noto Sans SC')),
+                  GridColumn(
+                    columnName: 'lotteryType',
+                    allowSorting: false,
+                    label: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '抽奖类型',
+                        style: TextStyle(fontFamily: 'Noto Sans SC'),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -133,7 +168,6 @@ class _LotteryPageState extends State<LotteryPage> {
 
   Future<void> _getClipboardText(LotteryController lotteryController) async {
     userLotteryInfoList.clear();
-    lotteryController.title = '正在获取抽奖动态...';
     ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
     //developer.log(data?.text ?? '');
     final RegExp opusIdRegex = RegExp(
@@ -144,17 +178,15 @@ class _LotteryPageState extends State<LotteryPage> {
       final String opusId = match.group(1) ?? '';
       developer.log(opusId);
       userLotteryInfoList.add(UserLotteryInfo(business_id: opusId));
+      lotteryController.total = userLotteryInfoList.length;
     }
     userLotteryInfoDataSource.notifyListeners();
-    lotteryController.title = '获取到${userLotteryInfoList.length}个抽奖动态ID';
   }
 
   Future<void> _getLotteryInfo(LotteryController lotteryController) async {
-    lotteryController.title = '正在获取抽奖信息...';
     String csrf =
         await SecureStorageService.getToken('bili_jct') ?? 'lottery csrf null';
     for (var item in userLotteryInfoList) {
-      lotteryController.title = '正在获取抽奖动态详情...${item.business_id}';
       var pageDetailResponse = await api.get(
         '/polymer/web-dynamic/v1/detail',
         queryParameters: {'id': item.business_id},
@@ -253,7 +285,6 @@ class _LotteryPageState extends State<LotteryPage> {
       }
       await Future.delayed(const Duration(seconds: 2));
     }
-    lotteryController.title = '抽奖信息获取完成';
   }
 
   Future<void> _startLottery(LotteryController lotteryController) async {
@@ -261,7 +292,6 @@ class _LotteryPageState extends State<LotteryPage> {
     await _getLotteryInfo(lotteryController);
     for (var item in userLotteryInfoList) {
       bool flag = false;
-      lotteryController.title = '正在开始抽奖...${item.business_id}';
       if (item.lotteryType == '互动抽奖') {
         developer.log(DateTime.now().toString());
         if (DateTime.fromMillisecondsSinceEpoch(
@@ -360,7 +390,6 @@ class _LotteryPageState extends State<LotteryPage> {
         await Future.delayed(const Duration(seconds: 5));
       }
     }
-    lotteryController.title = '抽奖完成';
-    lotteryController.isLoading = false;
+    lotteryController.loadStatus = LoadStatus.done;
   }
 }

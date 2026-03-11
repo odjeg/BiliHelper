@@ -1,17 +1,11 @@
 import 'package:flutter/foundation.dart';
+import 'package:bilibilihelper/controllers/load_status.dart';
 
 class LotteryController extends ChangeNotifier {
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-  set isLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
-
-  String _title = '';
-  String get title => _title;
-  set title(String value) {
-    _title = value;
+  LoadStatus _loadStatus = LoadStatus.none;
+  LoadStatus get loadStatus => _loadStatus;
+  set loadStatus(LoadStatus value) {
+    _loadStatus = value;
     notifyListeners();
   }
 

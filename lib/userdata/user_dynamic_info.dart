@@ -75,9 +75,6 @@ class UserDynamicInfoDataSource extends DataGridSource {
   DataGridRowAdapter? buildRow(DataGridRow row) {
     // TODO: implement buildRow
     return DataGridRowAdapter(
-      color: row.getCells()[6].value == '互动抽奖'
-          ? Colors.green[50]
-          : Colors.red[50],
       cells: row.getCells().map<Widget>((dataGridCell) {
         return Container(
           alignment: Alignment.center,

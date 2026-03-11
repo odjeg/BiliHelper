@@ -87,7 +87,7 @@ class UserFollowingInfoDataSource extends DataGridSource {
               text: TextSpan(
                 text: dataGridCell.value.toString(),
                 style: TextStyle(
-                  color: Colors.blue[300],
+                  color: Colors.blue[700],
                   decoration: TextDecoration.underline,
                 ),
                 recognizer: TapGestureRecognizer()

@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
+import 'package:bilibilihelper/controllers/load_status.dart';
 
 class DynamicController extends ChangeNotifier {
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-  set isLoading(bool value) {
-    _isLoading = value;
+  LoadStatus _loadStatus = LoadStatus.none;
+  LoadStatus get loadStatus => _loadStatus;
+  set loadStatus(LoadStatus value) {
+    _loadStatus = value;
     notifyListeners();
   }
 
