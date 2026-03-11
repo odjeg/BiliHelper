@@ -22,33 +22,6 @@ class _DynamicPageState extends State<DynamicPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   title: Text('我的动态'),
-      //   actions: [
-      //     Consumer<DynamicController>(
-      //       builder: (context, dynamicController, child) =>
-      //           dynamicController.isLoading
-      //           ? CircularProgressIndicator(
-      //               value: dynamicController.total == 0
-      //                   ? 0.0
-      //                   : dynamicController.total / 200.0,
-      //             )
-      //           : IconButton(
-      //               icon: Icon(Icons.refresh),
-      //               onPressed: () async {
-      //                 if (dynamicController.isLoading) {
-      //                   return;
-      //                 }
-
-      //                 developer.log('刷新动态列表');
-      //                 dynamicController.isLoading = true;
-      //                 initDynamicInfo(dynamicController);
-      //               },
-      //             ),
-      //     ),
-      //     SizedBox(width: 10),
-      //   ],
-      // ),
       body: Column(
         children: [
           opBar(),
