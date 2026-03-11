@@ -74,8 +74,8 @@ class _LotteryPageState extends State<LotteryPage> {
               data: SfDataGridThemeData(gridLineColor: Colors.white),
               child: SfDataGrid(
                 source: userLotteryInfoDataSource,
-                headerGridLinesVisibility: GridLinesVisibility.vertical,
-                gridLinesVisibility: GridLinesVisibility.vertical,
+                headerGridLinesVisibility: GridLinesVisibility.horizontal,
+                gridLinesVisibility: GridLinesVisibility.horizontal,
                 columnWidthMode: ColumnWidthMode.fill,
                 selectionMode: SelectionMode.single,
                 rowHeight: 25,

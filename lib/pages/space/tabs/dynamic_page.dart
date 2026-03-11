@@ -58,8 +58,8 @@ class _DynamicPageState extends State<DynamicPage>
               data: SfDataGridThemeData(selectionColor: Colors.pink[50]),
               child: SfDataGrid(
                 source: userDynamicInfoSource,
-                headerGridLinesVisibility: GridLinesVisibility.vertical,
-                gridLinesVisibility: GridLinesVisibility.vertical,
+                headerGridLinesVisibility: GridLinesVisibility.horizontal,
+                gridLinesVisibility: GridLinesVisibility.horizontal,
                 columnWidthMode: ColumnWidthMode.fill,
                 selectionMode: SelectionMode.single,
                 rowHeight: 25,
