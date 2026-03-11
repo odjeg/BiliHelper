@@ -76,7 +76,6 @@ class _LogInPageState extends State<LogInPage> {
       _checkQrStatus().then((value) {
         if (value == null) return; // 异常时直接返回
 
-        // ✅ 修复：响应式变量必须用 .value 赋值
         message.value = (value['data']['message'] ?? '') + '${DateTime.now()}';
 
         if (value['data']['code'] == 0) {
@@ -102,7 +101,6 @@ class _LogInPageState extends State<LogInPage> {
     _url.value = '';
     _qrcode_key = null;
     _fetchQrData().then((_) {
-      // ✅ 修复：等重新获取二维码完成后，再启动定时器
       _startTimer();
     });
   }
@@ -110,7 +108,6 @@ class _LogInPageState extends State<LogInPage> {
   @override
   void initState() {
     super.initState();
-    // ✅ 修复：等获取二维码完成后，再启动定时器
     _fetchQrData().then((_) {
       _startTimer();
     });
@@ -125,7 +122,6 @@ class _LogInPageState extends State<LogInPage> {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ 修复：移除嵌套的 GetMaterialApp，只返回页面内容
     return Scaffold(
       body: Center(
         child: Column(
