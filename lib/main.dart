@@ -27,6 +27,7 @@ void main() async {
 
   await api.initDio();
 
+  //需增加异常处理
   var response = await api.get(
     'https://passport.bilibili.com/x/passport-login/web/cookie/info',
     queryParameters: {'csrf': await SecureStorageService.getToken('bili_jct')},
