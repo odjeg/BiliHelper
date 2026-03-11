@@ -1,4 +1,3 @@
-import 'dart:developer' as developer;
 import 'package:bilibilihelper/controllers/dynamic_controller.dart';
 import 'package:bilibilihelper/controllers/load_status.dart';
 import 'package:bilibilihelper/services/secure_storage_service.dart';
