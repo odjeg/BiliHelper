@@ -20,65 +20,62 @@ class _FollowingsPageState extends State<FollowingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Column(
         children: [
           opBar(),
           Expanded(
-            child: SfDataGridTheme(
-              data: SfDataGridThemeData(selectionColor: Colors.pink[50]),
-              child: SfDataGrid(
-                headerGridLinesVisibility: GridLinesVisibility.horizontal,
-                gridLinesVisibility: GridLinesVisibility.horizontal,
-                source: userFollowingInfoSource,
-                columnWidthMode: ColumnWidthMode.fill,
-                selectionMode: SelectionMode.single,
-                rowHeight: 25,
-                headerRowHeight: 30,
-                allowSorting: true,
-                columns: [
-                  GridColumn(
-                    columnName: 'mid',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'UID',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+            child: SfDataGrid(
+              key: ValueKey('followings_datagrid'),
+              headerGridLinesVisibility: GridLinesVisibility.horizontal,
+              gridLinesVisibility: GridLinesVisibility.horizontal,
+              source: userFollowingInfoSource,
+              columnWidthMode: ColumnWidthMode.fill,
+              selectionMode: SelectionMode.single,
+              rowHeight: 25,
+              headerRowHeight: 30,
+              allowSorting: true,
+              columns: [
+                GridColumn(
+                  columnName: 'mid',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'UID',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    columnName: 'uname',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '用户名',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  columnName: 'uname',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '用户名',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    columnName: 'mtime',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '关注时间',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  columnName: 'mtime',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '关注时间',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    columnName: 'special',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '特别关注',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  columnName: 'special',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '特别关注',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -104,11 +101,10 @@ class _opBarState extends State<opBar> {
           height: 50,
           margin: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.white,
             borderRadius: BorderRadius.circular(5),
             boxShadow: [
               BoxShadow(
-                color: Colors.purple[200]!,
+                color: Colors.purple[300]!,
                 offset: Offset(0, 1),
                 blurRadius: 1.0,
               ),
@@ -135,8 +131,6 @@ class _opBarState extends State<opBar> {
                     followingsController.loadStatus = LoadStatus.loading;
                     initFollowingList(followingsController);
                   },
-            highlightColor: Colors.pink[100],
-            hoverColor: Colors.pink[50],
           ),
         ),
       ],

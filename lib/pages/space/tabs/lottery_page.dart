@@ -23,7 +23,6 @@ class _LotteryPageState extends State<LotteryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Column(
         children: [
           Row(
@@ -33,11 +32,10 @@ class _LotteryPageState extends State<LotteryPage> {
                 height: 50,
                 margin: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white,
                   borderRadius: BorderRadius.circular(5),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.purple[200]!,
+                      color: Colors.purple[300]!,
                       offset: Offset(0, 1),
                       blurRadius: 1.0,
                     ),
@@ -70,95 +68,92 @@ class _LotteryPageState extends State<LotteryPage> {
             ],
           ),
           Expanded(
-            child: SfDataGridTheme(
-              data: SfDataGridThemeData(gridLineColor: Colors.white),
-              child: SfDataGrid(
-                source: userLotteryInfoDataSource,
-                headerGridLinesVisibility: GridLinesVisibility.horizontal,
-                gridLinesVisibility: GridLinesVisibility.horizontal,
-                columnWidthMode: ColumnWidthMode.fill,
-                selectionMode: SelectionMode.single,
-                rowHeight: 25,
-                headerRowHeight: 30,
-                allowSorting: true,
-                columns: [
-                  GridColumn(
-                    columnName: 'business_id',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '抽奖动态ID',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+            child: SfDataGrid(
+              source: userLotteryInfoDataSource,
+              headerGridLinesVisibility: GridLinesVisibility.horizontal,
+              gridLinesVisibility: GridLinesVisibility.horizontal,
+              columnWidthMode: ColumnWidthMode.fill,
+              selectionMode: SelectionMode.single,
+              rowHeight: 25,
+              headerRowHeight: 30,
+              allowSorting: true,
+              columns: [
+                GridColumn(
+                  columnName: 'business_id',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '抽奖动态ID',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    columnName: 'mid',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'UID',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  columnName: 'mid',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'UID',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
+                ),
 
-                  GridColumn(
-                    columnName: 'name',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '用户名',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                GridColumn(
+                  columnName: 'name',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '用户名',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    columnName: 'followed',
-                    allowSorting: false,
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '是否已关注',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  columnName: 'followed',
+                  allowSorting: false,
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '是否已关注',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    columnName: 'lottery_time',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '开奖时间',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  columnName: 'lottery_time',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '开奖时间',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    columnName: 'isForward',
-                    allowSorting: false,
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '是否已转发/预约',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  columnName: 'isForward',
+                  allowSorting: false,
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '是否已转发/预约',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
+                ),
 
-                  GridColumn(
-                    columnName: 'lotteryType',
-                    allowSorting: false,
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '抽奖类型',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                GridColumn(
+                  columnName: 'lotteryType',
+                  allowSorting: false,
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '抽奖类型',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],

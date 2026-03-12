@@ -21,98 +21,96 @@ class _DynamicPageState extends State<DynamicPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Column(
         children: [
           opBar(),
           Expanded(
-            child: SfDataGridTheme(
-              data: SfDataGridThemeData(selectionColor: Colors.pink[50]),
-              child: SfDataGrid(
-                source: userDynamicInfoSource,
-                headerGridLinesVisibility: GridLinesVisibility.horizontal,
-                gridLinesVisibility: GridLinesVisibility.horizontal,
-                columnWidthMode: ColumnWidthMode.fill,
-                selectionMode: SelectionMode.single,
-                rowHeight: 25,
-                headerRowHeight: 30,
-                allowSorting: true,
-                columns: [
-                  //根据UserDynamicInfo的字段，添加列
-                  GridColumn(
-                    columnName: 'id_str',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '动态ID',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+            child: SfDataGrid(
+              source: userDynamicInfoSource,
+              headerGridLinesVisibility: GridLinesVisibility.horizontal,
+              gridLinesVisibility: GridLinesVisibility.horizontal,
+              columnWidthMode: ColumnWidthMode.fill,
+              selectionMode: SelectionMode.single,
+              rowHeight: 25,
+              headerRowHeight: 30,
+              allowSorting: true,
+              columns: [
+                //根据UserDynamicInfo的字段，添加列
+                GridColumn(
+                  columnName: 'id_str',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '动态ID',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    columnName: 'pub_ts',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '转发时间',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  columnName: 'pub_ts',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '转发时间',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    columnName: 'orig_id_str',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '转发动态ID',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  columnName: 'orig_id_str',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '转发动态ID',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    columnName: 'orig_mid',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '转发用户UID',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  columnName: 'orig_mid',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '转发用户UID',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    columnName: 'orig_name',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '转发用户名',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  columnName: 'orig_name',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '转发用户名',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    allowSorting: false,
-                    columnName: 'following',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '是否关注',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  allowSorting: false,
+                  width: 50,
+                  columnName: 'following',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '关注',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                  GridColumn(
-                    allowSorting: false,
-                    columnName: 'dynamic_text',
-                    label: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '动态类型',
-                        style: TextStyle(fontFamily: 'Noto Sans SC'),
-                      ),
+                ),
+                GridColumn(
+                  allowSorting: false,
+                  width: 80,
+                  columnName: 'dynamic_text',
+                  label: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '动态类型',
+                      style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -138,11 +136,10 @@ class _opBarState extends State<opBar> {
           height: 50,
           margin: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.white,
             borderRadius: BorderRadius.circular(5),
             boxShadow: [
               BoxShadow(
-                color: Colors.red[200]!,
+                color: Colors.red[300]!,
                 offset: Offset(0, 1),
                 blurRadius: 1.0,
               ),
@@ -170,8 +167,6 @@ class _opBarState extends State<opBar> {
                     dynamicController.loadStatus = LoadStatus.loading;
                     initDynamicInfo(dynamicController);
                   },
-            highlightColor: Colors.pink[100],
-            hoverColor: Colors.pink[50],
           ),
         ),
       ],

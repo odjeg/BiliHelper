@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:bilibilihelper/controllers/theme_controller.dart';
 import 'package:bilibilihelper/pages/home/home_controller.dart';
 import 'package:bilibilihelper/pages/log_in_page.dart';
 import 'package:bilibilihelper/services/secure_storage_service.dart';
@@ -7,6 +8,7 @@ import 'package:bilibilihelper/userdata/user_following_info.dart';
 import 'package:bilibilihelper/userdata/user_lottery_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class MyNavRail extends StatefulWidget {
   final int selectedIndex;
@@ -32,7 +34,6 @@ class _MyNavRailState extends State<MyNavRail> {
         hoverColor: Colors.transparent,
       ),
       child: NavigationRail(
-        backgroundColor: Colors.grey[200],
         selectedIndex: widget.selectedIndex,
         selectedIconTheme: IconThemeData(color: Colors.pink[200]),
         unselectedIconTheme: IconThemeData(color: Colors.grey),
@@ -50,14 +51,29 @@ class _MyNavRailState extends State<MyNavRail> {
             padding: EdgeInsets.only(top: 50),
           ),
           NavigationRailDestination(
-            icon: Icon(Icons.favorite),
-            label: Text('收藏'),
+            icon: Icon(Icons.comment_outlined),
+            selectedIcon: Icon(Icons.comment),
+            label: Text('评论'),
             padding: EdgeInsets.symmetric(vertical: 20),
           ),
         ],
         //头像
         trailing: Column(
           children: [
+            Consumer<ThemeController>(
+              builder: (context, themeController, child) => Switch(
+                value: themeController.currThemeMode == ThemeMode.dark,
+                onChanged: (value) {
+                  if (value) {
+                    themeController.themeMode = ThemeMode.dark;
+                    developer.log('dark mode');
+                  } else {
+                    themeController.themeMode = ThemeMode.light;
+                    developer.log('light mode');
+                  }
+                },
+              ),
+            ),
             Obx(
               () => ClipOval(
                 child: Image.network(

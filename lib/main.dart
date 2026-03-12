@@ -3,9 +3,12 @@ import 'dart:developer' as developer;
 import 'package:bilibilihelper/controllers/dynamic_controller.dart';
 import 'package:bilibilihelper/controllers/followings_controller.dart';
 import 'package:bilibilihelper/controllers/lottery_controller.dart';
+import 'package:bilibilihelper/controllers/theme_controller.dart';
 import 'package:bilibilihelper/pages/home/home_page.dart';
 import 'package:bilibilihelper/pages/log_in_page.dart';
 import 'package:bilibilihelper/services/secure_storage_service.dart';
+import 'package:bilibilihelper/theme/dark_theme.dart';
+import 'package:bilibilihelper/theme/light_theme.dart';
 import 'package:bilibilihelper/utils/bili_x_api.dart';
 import 'package:flutter/material.dart';
 
@@ -48,6 +51,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => FollowingsController()),
         ChangeNotifierProvider(create: (context) => DynamicController()),
         ChangeNotifierProvider(create: (context) => LotteryController()),
+        ChangeNotifierProvider(create: (context) => ThemeController()),
       ],
       child: MyApp(needLogin: needLogin),
     ),
@@ -62,7 +66,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: 'Noto Sans SC'),
+      //theme: ThemeData(fontFamily: 'Noto Sans SC'),
+      themeMode: Provider.of<ThemeController>(context).currThemeMode,
+      //themeMode: ThemeMode.dark,
+      theme: LightTheme.theme,
+      darkTheme: DarkTheme.theme,
       home: needLogin ? const LogInPage() : const HomePage(),
     );
   }
