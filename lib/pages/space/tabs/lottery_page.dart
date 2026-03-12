@@ -35,7 +35,7 @@ class _LotteryPageState extends State<LotteryPage> {
                   borderRadius: BorderRadius.circular(5),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.purple[300]!,
+                      color: Colors.orange[300]!,
                       offset: Offset(0, 1),
                       blurRadius: 1.0,
                     ),
