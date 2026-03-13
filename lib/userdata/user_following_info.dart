@@ -77,7 +77,7 @@ class UserFollowingInfoDataSource extends DataGridSource {
                   .firstWhere((element) => element.columnName == 'special')
                   .value ==
               1
-          ? Colors.green[500]
+          ? Colors.green[400]
           : null,
       cells: row.getCells().map<Widget>((dataGridCell) {
         switch (dataGridCell.columnName) {

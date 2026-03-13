@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'dart:developer' as developer;
 import 'package:bilibilihelper/userdata/user_lottery_info.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_core/theme.dart';
 import 'dart:core';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:bilibilihelper/controllers/lottery_controller.dart';
@@ -169,12 +168,15 @@ class _LotteryPageState extends State<LotteryPage> {
       r'(\d{18,19})', // 核心正则
       multiLine: true, // 支持多行匹配（必须，因为HTML是多行文本）
     );
+    var opusIdSet = <String>{};
     for (final Match match in opusIdRegex.allMatches(data?.text ?? '')) {
       final String opusId = match.group(1) ?? '';
-      developer.log(opusId);
-      userLotteryInfoList.add(UserLotteryInfo(business_id: opusId));
-      lotteryController.total = userLotteryInfoList.length;
+      opusIdSet.add(opusId);
     }
+    lotteryController.total = opusIdSet.length;
+    userLotteryInfoList = opusIdSet
+        .map((e) => UserLotteryInfo(business_id: e))
+        .toList();
     userLotteryInfoDataSource.notifyListeners();
   }
 
@@ -347,6 +349,7 @@ class _LotteryPageState extends State<LotteryPage> {
         if (thumbResponse.statusCode == 200 &&
             thumbResponse.data['code'] == 0) {
           developer.log('点赞: ${thumbResponse.data}');
+          await Future.delayed(const Duration(seconds: 2));
         } else {
           developer.log('点赞失败: ${thumbResponse.data}');
         }
@@ -357,6 +360,7 @@ class _LotteryPageState extends State<LotteryPage> {
         );
         if (replyResponse.statusCode == 200 &&
             replyResponse.data['code'] == 0) {
+          await Future.delayed(const Duration(seconds: 2));
           developer.log('评论: ${replyResponse.data}');
         } else {
           developer.log('评论失败: ${replyResponse.data}');
@@ -376,13 +380,14 @@ class _LotteryPageState extends State<LotteryPage> {
           } else {
             developer.log('转发失败: ${respostResponse.data}');
           }
+          await Future.delayed(const Duration(seconds: 2));
         }
 
         item.isForward = '转赞评';
         userLotteryInfoDataSource.notifyListeners();
       }
       if (flag) {
-        await Future.delayed(const Duration(seconds: 5));
+        await Future.delayed(const Duration(seconds: 10));
       }
     }
     lotteryController.loadStatus = LoadStatus.done;

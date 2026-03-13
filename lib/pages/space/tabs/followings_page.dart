@@ -37,18 +37,17 @@ class _FollowingsPageState extends State<FollowingsPage> {
               columns: [
                 GridColumn(
                   columnName: 'mid',
-                  label: Container(
-                    alignment: Alignment.center,
+                  label: Center(
                     child: Text(
                       'UID',
+                      textAlign: TextAlign.center,
                       style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
                 ),
                 GridColumn(
                   columnName: 'uname',
-                  label: Container(
-                    alignment: Alignment.center,
+                  label: Center(
                     child: Text(
                       '用户名',
                       style: TextStyle(fontFamily: 'Noto Sans SC'),
@@ -57,8 +56,7 @@ class _FollowingsPageState extends State<FollowingsPage> {
                 ),
                 GridColumn(
                   columnName: 'mtime',
-                  label: Container(
-                    alignment: Alignment.center,
+                  label: Center(
                     child: Text(
                       '关注时间',
                       style: TextStyle(fontFamily: 'Noto Sans SC'),
@@ -67,8 +65,7 @@ class _FollowingsPageState extends State<FollowingsPage> {
                 ),
                 GridColumn(
                   columnName: 'special',
-                  label: Container(
-                    alignment: Alignment.center,
+                  label: Center(
                     child: Text(
                       '特别关注',
                       style: TextStyle(fontFamily: 'Noto Sans SC'),

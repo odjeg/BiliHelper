@@ -57,9 +57,9 @@ class _MyNavRailState extends State<MyNavRail> {
             padding: EdgeInsets.symmetric(vertical: 20),
           ),
         ],
-        //头像
         trailing: Column(
           children: [
+            // 主题切换
             Consumer<ThemeController>(
               builder: (context, themeController, child) => Switch(
                 value: themeController.currThemeMode == ThemeMode.dark,
@@ -74,6 +74,7 @@ class _MyNavRailState extends State<MyNavRail> {
                 },
               ),
             ),
+            // 头像
             Obx(
               () => ClipOval(
                 child: Image.network(
@@ -89,6 +90,7 @@ class _MyNavRailState extends State<MyNavRail> {
                 ),
               ),
             ),
+            // 退出登录
             IconButton(
               icon: Icon(Icons.logout),
               iconSize: 20,

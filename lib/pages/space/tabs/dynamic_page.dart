@@ -201,7 +201,7 @@ class _opBarState extends State<opBar> {
       dynamicController.total = dynamicInfoList.length;
       userDynamicInfoSource.notifyListeners();
       await Future.delayed(Duration(milliseconds: 2500));
-    } while (dynamicInfoList.length < 200);
+    } while (dynamicInfoList.length < 400);
     dynamicController.loadStatus = LoadStatus.done;
   }
 }
