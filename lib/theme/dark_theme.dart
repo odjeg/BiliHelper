@@ -4,5 +4,10 @@ class DarkTheme {
   static final ThemeData theme = ThemeData(
     brightness: Brightness.dark,
     fontFamily: 'Noto Sans SC',
+
+    colorScheme: ColorScheme.dark(primary: Colors.black),
+    switchTheme: SwitchThemeData(
+      trackColor: WidgetStateProperty.all(Colors.grey),
+    ),
   );
 }

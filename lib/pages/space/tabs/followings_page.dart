@@ -97,6 +97,7 @@ class _opBarState extends State<opBar> {
           height: 50,
           margin: EdgeInsets.all(10),
           decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(5),
             boxShadow: [
               BoxShadow(
