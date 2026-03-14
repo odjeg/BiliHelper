@@ -40,7 +40,6 @@ class _FollowingsPageState extends State<FollowingsPage> {
                   label: Center(
                     child: Text(
                       'UID',
-                      textAlign: TextAlign.center,
                       style: TextStyle(fontFamily: 'Noto Sans SC'),
                     ),
                   ),
