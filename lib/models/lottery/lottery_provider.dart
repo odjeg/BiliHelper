@@ -6,10 +6,10 @@ import 'package:bilihelper/common/services/bili_x_dio_service.dart';
 import 'package:bilihelper/common/utils/wbi_generator.dart';
 import 'package:bilihelper/models/lottery/dynamic_state.dart';
 import 'package:bilihelper/models/lottery/lottery_state.dart';
-import 'package:bilihelper/models/lottery/providers.dart/lottery_level_filter_provider.dart';
 import 'package:bilihelper/models/lottery/providers.dart/lottery_reply_provider.dart';
 import 'package:bilihelper/models/lottery/reply_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -23,10 +23,18 @@ class Lottery extends _$Lottery {
     return LotteryState(
       loadState: LoadState.none,
       link: '',
+      lvFilter: const {
+        'Lv0': true,
+        'Lv1': true,
+        'Lv2': true,
+        'Lv3': true,
+        'Lv4': true,
+        'Lv5': true,
+        'Lv6': true,
+      },
       keyWorldFilter: '',
       isMultiLotteryFilter: false,
       count: 1,
-      prizeItems: const [('一等奖', 1), ('二等奖', 1), ('三等奖', 1)],
       dynamicState: null,
       luckUserList: [],
     );
@@ -60,6 +68,28 @@ class Lottery extends _$Lottery {
   void updateLink(String link) {
     state = state.copyWith(link: link);
     log('updateLink: ${state.link}');
+  }
+
+  void updateLvFilter(String level) {
+    state = state.copyWith(
+      lvFilter: {...state.lvFilter, level: !state.lvFilter[level]!},
+    );
+    log('updateLvFilter: ${state.lvFilter}');
+  }
+
+  void resetLvFilter() {
+    state = state.copyWith(
+      lvFilter: {
+        'Lv0': true,
+        'Lv1': true,
+        'Lv2': true,
+        'Lv3': true,
+        'Lv4': true,
+        'Lv5': true,
+        'Lv6': true,
+      },
+    );
+    log('resetLvFilter: ${state.lvFilter}');
   }
 
   void updateKeyWorldFilter(String keyWorldFilter) {
@@ -245,7 +275,7 @@ class Lottery extends _$Lottery {
     }
     log('初始化抽奖链接中奖用户列表');
     List<ReplyState> filterUserReplyItems = [];
-    ref.read(lotteryLevelFilterProvider).forEach((key, value) {
+    state.lvFilter.forEach((key, value) {
       log('$key $value');
     });
     log(state.keyWorldFilter);
@@ -268,9 +298,7 @@ class Lottery extends _$Lottery {
 
     //先筛选用户Lv等级和关键词
     for (var item in replyItems) {
-      bool lvMatch = ref.read(
-        lotteryLevelFilterProvider,
-      )['Lv${item.current_level}']!;
+      bool lvMatch = state.lvFilter['Lv${item.current_level}']!;
       bool keyWorldMatch = item.message.contains(state.keyWorldFilter);
       if (lvMatch && keyWorldMatch) {
         filterUserReplyItems.add(item);

@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:bilihelper/common/constants/load_state.dart';
 import 'package:bilihelper/models/lottery/lottery_provider.dart';
-import 'package:bilihelper/models/lottery/providers.dart/lottery_level_filter_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,7 +10,7 @@ class UserLevelFilterSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lvChoiceMap = ref.watch(lotteryLevelFilterProvider);
+    final lvChoiceMap = ref.watch(lotteryProvider.select((s) => s.lvFilter));
 
     final isLoading = ref.watch(
       lotteryProvider.select((s) => s.loadState == LoadState.loading),
@@ -44,8 +43,8 @@ class UserLevelFilterSection extends ConsumerWidget {
                 : () {
                     // 点击时手动更新
                     ref
-                        .read(lotteryLevelFilterProvider.notifier)
-                        .toggle(entry.key);
+                        .read(lotteryProvider.notifier)
+                        .updateLvFilter(entry.key);
                   },
           ),
       ],

@@ -1,6 +1,5 @@
 import 'package:bilihelper/common/constants/load_state.dart';
 import 'package:bilihelper/models/lottery/lottery_provider.dart';
-import 'package:bilihelper/models/lottery/providers.dart/lottery_level_filter_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,7 +49,7 @@ class _FilterConditionAndResetSectionState
             onTap: isLoading
                 ? null
                 : () {
-                    ref.read(lotteryLevelFilterProvider.notifier).reset();
+                    ref.read(lotteryProvider.notifier).resetLvFilter();
                     // 点击后重置 hover 状态
                     setState(() => _isHovered = false);
                   },

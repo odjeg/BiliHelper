@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'lottery_provider.dart';
+part of 'following_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,50 +9,51 @@ part of 'lottery_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(Lottery)
-final lotteryProvider = LotteryProvider._();
+@ProviderFor(Following)
+final followingProvider = FollowingProvider._();
 
-final class LotteryProvider extends $NotifierProvider<Lottery, LotteryState> {
-  LotteryProvider._()
+final class FollowingProvider
+    extends $NotifierProvider<Following, FollowingState> {
+  FollowingProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'lotteryProvider',
+        name: r'followingProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$lotteryHash();
+  String debugGetCreateSourceHash() => _$followingHash();
 
   @$internal
   @override
-  Lottery create() => Lottery();
+  Following create() => Following();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(LotteryState value) {
+  Override overrideWithValue(FollowingState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<LotteryState>(value),
+      providerOverride: $SyncValueProvider<FollowingState>(value),
     );
   }
 }
 
-String _$lotteryHash() => r'e274a92d658c1eccd9e889c56fd12b4b49495988';
+String _$followingHash() => r'f7628e7152f678b52a93f0690076144e9fa8719a';
 
-abstract class _$Lottery extends $Notifier<LotteryState> {
-  LotteryState build();
+abstract class _$Following extends $Notifier<FollowingState> {
+  FollowingState build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<LotteryState, LotteryState>;
+    final ref = this.ref as $Ref<FollowingState, FollowingState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<LotteryState, LotteryState>,
-              LotteryState,
+              AnyNotifier<FollowingState, FollowingState>,
+              FollowingState,
               Object?,
               Object?
             >;

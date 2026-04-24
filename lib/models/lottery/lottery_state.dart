@@ -6,6 +6,7 @@ class LotteryState {
   // 加载状态
   final LoadState loadState;
   final String link;
+  final Map<String, bool> lvFilter;
   final String keyWorldFilter;
   final bool isMultiLotteryFilter;
   final int count;
@@ -16,6 +17,15 @@ class LotteryState {
   LotteryState({
     this.loadState = LoadState.none,
     this.link = '',
+    this.lvFilter = const {
+      'Lv0': true,
+      'Lv1': true,
+      'Lv2': true,
+      'Lv3': true,
+      'Lv4': true,
+      'Lv5': true,
+      'Lv6': true,
+    },
     this.keyWorldFilter = '',
     this.isMultiLotteryFilter = false,
     this.count = 1,
@@ -29,17 +39,18 @@ class LotteryState {
     LoadState? dynamicLoadState,
     LoadState? replyLoadState,
     String? link,
+    Map<String, bool>? lvFilter,
     String? keyWorldFilter,
     bool? isMultiLotteryFilter,
     int? count,
     List<(String name, int count)>? prizeItems,
     DynamicState? dynamicState,
     List<ReplyState>? luckUserList,
-    int? test,
   }) {
     return LotteryState(
       loadState: loadState ?? this.loadState,
       link: link ?? this.link,
+      lvFilter: lvFilter ?? this.lvFilter,
       keyWorldFilter: keyWorldFilter ?? this.keyWorldFilter,
       isMultiLotteryFilter: isMultiLotteryFilter ?? this.isMultiLotteryFilter,
       count: count ?? this.count,

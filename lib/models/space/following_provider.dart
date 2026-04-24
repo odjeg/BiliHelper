@@ -7,13 +7,11 @@ import 'package:bilihelper/models/user/following_model/following_data_source.dar
 import 'package:bilihelper/models/user/following_model/following_item.dart';
 import 'package:bilihelper/models/user/user_model.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'following_provider.g.dart';
 
-final followingProvider = NotifierProvider<FollowingNotifier, FollowingState>(
-  FollowingNotifier.new,
-);
-
-class FollowingNotifier extends Notifier<FollowingState> {
+@Riverpod(keepAlive: true)
+class Following extends _$Following {
   @override
   FollowingState build() {
     ref.onDispose(() {

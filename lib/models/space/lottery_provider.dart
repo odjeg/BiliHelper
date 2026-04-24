@@ -9,13 +9,12 @@ import 'package:bilihelper/models/user/lottery_model/lottery_item.dart';
 import 'package:bilihelper/models/user/user_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final lotteryProvider = NotifierProvider<LotteryNotifier, LotteryState>(
-  LotteryNotifier.new,
-);
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'lottery_provider.g.dart';
 
-class LotteryNotifier extends Notifier<LotteryState> {
+@Riverpod(keepAlive: true)
+class Lottery extends _$Lottery {
   @override
   LotteryState build() {
     ref.onDispose(() {
