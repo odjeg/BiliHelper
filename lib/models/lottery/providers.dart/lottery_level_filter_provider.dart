@@ -2,7 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'lottery_level_filter_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class LotteryLevelFilter extends _$LotteryLevelFilter {
   @override
   Map<String, bool> build() {

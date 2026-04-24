@@ -9,10 +9,9 @@ import 'package:bilihelper/models/user/user_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final followingProvider =
-    NotifierProvider.autoDispose<FollowingNotifier, FollowingState>(
-      FollowingNotifier.new,
-    );
+final followingProvider = NotifierProvider<FollowingNotifier, FollowingState>(
+  FollowingNotifier.new,
+);
 
 class FollowingNotifier extends Notifier<FollowingState> {
   @override
@@ -91,6 +90,8 @@ class FollowingNotifier extends Notifier<FollowingState> {
 
         updateLoadTotal(total);
         updateLoadCount(UserModel().followingItems.length);
+
+        followingDataSource.notifyListeners(); // 刷新数据表格
 
         await Future.delayed(Duration(milliseconds: 500));
 

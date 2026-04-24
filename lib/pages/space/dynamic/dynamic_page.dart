@@ -11,11 +11,7 @@ class DynamicPage extends ConsumerStatefulWidget {
   ConsumerState<DynamicPage> createState() => _DynamicPageState();
 }
 
-class _DynamicPageState extends ConsumerState<DynamicPage>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
+class _DynamicPageState extends ConsumerState<DynamicPage> {
   final DataGridController dataGridController = DataGridController();
   @override
   Widget build(BuildContext context) {

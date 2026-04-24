@@ -20,7 +20,7 @@ final class LotteryLevelFilterProvider
         argument: null,
         retry: null,
         name: r'lotteryLevelFilterProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -42,7 +42,7 @@ final class LotteryLevelFilterProvider
 }
 
 String _$lotteryLevelFilterHash() =>
-    r'ce7f5aecbef7554b87caaebb7c2dc5b46d7fc317';
+    r'0bfc49a0d26e68151cca3ad574e38644a1732132';
 
 abstract class _$LotteryLevelFilter extends $Notifier<Map<String, bool>> {
   Map<String, bool> build();

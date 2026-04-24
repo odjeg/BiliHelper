@@ -10,13 +10,12 @@ import 'package:bilihelper/models/user/dynamic_model/dynamic_data_source.dart';
 import 'package:bilihelper/models/user/dynamic_model/dynamic_item.dart';
 import 'package:bilihelper/models/user/user_model.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 part 'dynamic_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class Dynamic extends _$Dynamic {
   @override
   DynamicState build() {
@@ -82,6 +81,9 @@ class Dynamic extends _$Dynamic {
         if (response.data['data']['has_more'] == false) break;
 
         updateCount(UserModel().dynamicItems.length);
+
+        dynamicDataSource.notifyListeners(); // 刷新数据表格
+
         await Future.delayed(Duration(milliseconds: 2500));
       } while (UserModel().dynamicItems.length < 400);
       updateLoadStatus(LoadState.done);
@@ -98,6 +100,7 @@ class Dynamic extends _$Dynamic {
       return;
     }
     updateLoadStatus(LoadState.done);
+    dynamicDataSource.notifyListeners(); // 刷新数据表格
   }
 
   Future<void> deleteSelectedDynamic(

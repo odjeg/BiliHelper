@@ -11,7 +11,6 @@ import 'package:bilihelper/pages/lottery/component/multi_awart_section.dart';
 import 'package:bilihelper/pages/lottery/component/single_award_section.dart';
 import 'package:bilihelper/pages/lottery/component/user_level_filter_section.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LotteryPage extends ConsumerStatefulWidget {
@@ -22,15 +21,11 @@ class LotteryPage extends ConsumerStatefulWidget {
 }
 
 class _LotteryPageState extends ConsumerState<LotteryPage>
-    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late List<(TextEditingController, TextEditingController)> prizeControllers;
 
   @override
-  bool get wantKeepAlive => true;
-
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(

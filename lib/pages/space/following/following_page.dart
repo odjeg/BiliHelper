@@ -1,6 +1,5 @@
 import 'package:bilihelper/common/constants/load_state.dart';
 import 'package:bilihelper/models/space/following_provider.dart';
-import 'package:bilihelper/models/user/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -12,11 +11,7 @@ class FollowingPage extends ConsumerStatefulWidget {
   ConsumerState<FollowingPage> createState() => _FollowingPageState();
 }
 
-class _FollowingPageState extends ConsumerState<FollowingPage>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
+class _FollowingPageState extends ConsumerState<FollowingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

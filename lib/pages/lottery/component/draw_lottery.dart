@@ -23,27 +23,31 @@ class _DrawLotteryState extends ConsumerState<DrawLottery>
   @override
   void initState() {
     super.initState();
-    animationController =
-        AnimationController(
-            vsync: this,
-            duration: const Duration(seconds: 5), // 渐变滚动速度（值越小越快）
-          )
-          ..repeat()
-          ..stop(); // repeat() 实现无限循环
+    ref
+        .read(lotteryProvider.notifier)
+        .initAnimation(this, const Duration(seconds: 5));
+    animationController = ref
+        .read(lotteryProvider.notifier)
+        .animationController!;
 
     // 生成0~1的动画值，驱动渐变平移
-    gradientAnimation = Tween<double>(begin: 300, end: 1200.0).animate(
-      CurvedAnimation(
-        parent: animationController,
-        curve: Curves.linear, // 匀速滚动，无加速减速
-      ),
-    );
+    gradientAnimation = ref.read(lotteryProvider.notifier).gradientAnimation!;
   }
 
   @override
   void dispose() {
-    animationController.dispose();
+    log('DrawLottery dispose');
+    animationController.stop();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (ref.read(lotteryProvider).loadState == LoadState.loading &&
+        !animationController.isAnimating) {
+      animationController.repeat();
+    }
+    super.didChangeDependencies();
   }
 
   @override

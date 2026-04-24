@@ -20,7 +20,7 @@ final class LotteryReplyProvider
         argument: null,
         retry: null,
         name: r'lotteryReplyProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -41,7 +41,7 @@ final class LotteryReplyProvider
   }
 }
 
-String _$lotteryReplyHash() => r'026bcb9f3c497bb3af8ba05eccfe7d9601ab0727';
+String _$lotteryReplyHash() => r'9edaabb3d9a0ec2a31888e7653c6b450747125d9';
 
 abstract class _$LotteryReply extends $Notifier<List<ReplyState>> {
   List<ReplyState> build();

@@ -9,13 +9,13 @@ import 'package:bilihelper/models/lottery/lottery_state.dart';
 import 'package:bilihelper/models/lottery/providers.dart/lottery_level_filter_provider.dart';
 import 'package:bilihelper/models/lottery/providers.dart/lottery_reply_provider.dart';
 import 'package:bilihelper/models/lottery/reply_item.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'lottery_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class Lottery extends _$Lottery {
   @override
   LotteryState build() {
@@ -29,6 +29,26 @@ class Lottery extends _$Lottery {
       prizeItems: const [('一等奖', 1), ('二等奖', 1), ('三等奖', 1)],
       dynamicState: null,
       luckUserList: [],
+    );
+  }
+
+  AnimationController? animationController;
+  Animation<double>? gradientAnimation;
+
+  void initAnimation(TickerProvider vsync, Duration duration) {
+    if (animationController != null) {
+      return;
+    }
+    animationController = AnimationController(vsync: vsync, duration: duration)
+      ..repeat()
+      ..stop(); // 默认不播放动画，等抽奖开始时再播放
+
+    // 生成0~1的动画值，驱动渐变平移
+    gradientAnimation = Tween<double>(begin: 300, end: 1200.0).animate(
+      CurvedAnimation(
+        parent: animationController!,
+        curve: Curves.linear, // 匀速滚动，无加速减速
+      ),
     );
   }
 

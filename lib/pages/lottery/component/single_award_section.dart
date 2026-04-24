@@ -4,13 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SingleAwardSection extends ConsumerStatefulWidget {
-  SingleAwardSection({super.key});
+  const SingleAwardSection({super.key});
   @override
   ConsumerState<SingleAwardSection> createState() => _SingleAwardSectionState();
 }
 
 class _SingleAwardSectionState extends ConsumerState<SingleAwardSection> {
   final _countController = TextEditingController();
+
+  @override
+  void initState() {
+    _countController.text = ref.read(lotteryProvider).count.toString();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(

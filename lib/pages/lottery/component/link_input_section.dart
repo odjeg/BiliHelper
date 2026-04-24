@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bilihelper/common/constants/load_state.dart';
 import 'package:bilihelper/models/lottery/lottery_provider.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,14 @@ class LinkInputSection extends ConsumerStatefulWidget {
 
 class _LinkInputSectionState extends ConsumerState<LinkInputSection> {
   final _linkController = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    log('LinkInputSection initState');
+    _linkController.text = ref.read(lotteryProvider).link;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(

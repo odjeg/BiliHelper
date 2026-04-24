@@ -19,7 +19,7 @@ final class LotteryProvider extends $NotifierProvider<Lottery, LotteryState> {
         argument: null,
         retry: null,
         name: r'lotteryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -40,7 +40,7 @@ final class LotteryProvider extends $NotifierProvider<Lottery, LotteryState> {
   }
 }
 
-String _$lotteryHash() => r'55fac3a0a06318f51a0bd75672e75f7888d24aa8';
+String _$lotteryHash() => r'59a820d6631ec7d644c0ff40c3c70d7277e00ee1';
 
 abstract class _$Lottery extends $Notifier<LotteryState> {
   LotteryState build();

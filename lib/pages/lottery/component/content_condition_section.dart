@@ -15,6 +15,12 @@ class _ContentConditionSectionState
     extends ConsumerState<ContentConditionSection> {
   final _keyWorldFilterController = TextEditingController();
   @override
+  void initState() {
+    _keyWorldFilterController.text = ref.read(lotteryProvider).keyWorldFilter;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(
       lotteryProvider.select((state) => state.loadState == LoadState.loading),
