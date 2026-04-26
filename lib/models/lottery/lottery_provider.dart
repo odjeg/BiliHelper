@@ -9,7 +9,6 @@ import 'package:bilihelper/models/lottery/lottery_state.dart';
 import 'package:bilihelper/models/lottery/providers.dart/lottery_reply_provider.dart';
 import 'package:bilihelper/models/lottery/reply_item.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -44,9 +43,6 @@ class Lottery extends _$Lottery {
   Animation<double>? gradientAnimation;
 
   void initAnimation(TickerProvider vsync, Duration duration) {
-    if (animationController != null) {
-      return;
-    }
     animationController = AnimationController(vsync: vsync, duration: duration)
       ..repeat()
       ..stop(); // 默认不播放动画，等抽奖开始时再播放
@@ -263,6 +259,7 @@ class Lottery extends _$Lottery {
       } while (!is_end);
     } catch (e) {
       log('初始化抽奖链接评论列表失败');
+      return [];
     }
     log('初始化抽奖链接评论列表完成');
     return replyItems;

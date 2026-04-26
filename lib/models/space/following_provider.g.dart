@@ -41,7 +41,7 @@ final class FollowingProvider
   }
 }
 
-String _$followingHash() => r'f7628e7152f678b52a93f0690076144e9fa8719a';
+String _$followingHash() => r'4682a3f3e9e6daaa61a1cfd34ebe232a59426ba4';
 
 abstract class _$Following extends $Notifier<FollowingState> {
   FollowingState build();

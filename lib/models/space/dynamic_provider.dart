@@ -19,20 +19,15 @@ part 'dynamic_provider.g.dart';
 class Dynamic extends _$Dynamic {
   @override
   DynamicState build() {
-    final cancelToken = CancelToken();
-    var isDisposed = false;
+    _cancelToken = CancelToken();
     ref.onDispose(() {
-      isDisposed = true;
-      cancelToken.cancel();
+      _cancelToken?.cancel();
+      log('DynamicProvider已被销毁，取消请求');
     });
-    return DynamicState(
-      loadState: LoadState.none,
-      count: 0,
-      isDisposed: isDisposed,
-      cancelToken: cancelToken,
-    );
+    return DynamicState(loadState: LoadState.none, count: 0);
   }
 
+  CancelToken? _cancelToken;
   final DynamicDataSource dynamicDataSource = DynamicDataSource();
 
   void updateLoadStatus(LoadState loadState) {
@@ -44,69 +39,76 @@ class Dynamic extends _$Dynamic {
   }
 
   Future<void> initDynamicInfo() async {
+    final CancelToken cancelToken = _cancelToken!;
+
+    if (cancelToken.isCancelled) return;
+
     updateLoadStatus(LoadState.loading);
-    if (state.isDisposed) return;
 
     String? host_mid = await SecureStorageService.getToken('DedeUserID');
     UserModel().dynamicItems.clear();
     dynamicDataSource.notifyListeners();
-    String? offset = '';
+    String? offset;
     Response<dynamic> response;
 
     try {
       do {
         log('初始化动态列表...');
-
-        response = await BiliXDioService.get(
-          '/polymer/web-dynamic/v1/feed/space',
-          queryParameters: await WbiGenerator().genWbi(
-            params: {
-              'offset': offset,
-              'host_mid': host_mid,
-              'timezone_offset': '-480',
-              'platform': 'web',
-              'web_location': '333.1387',
-            },
-          ),
-          cancelToken: state.cancelToken,
-        );
-        if (state.isDisposed ||
-            response.data == null ||
-            response.data['data'] == null) {
-          return;
+        try {
+          response = await BiliXDioService.get(
+            '/polymer/web-dynamic/v1/feed/space',
+            queryParameters: await WbiGenerator().genWbi(
+              params: {
+                'offset': offset,
+                'host_mid': host_mid,
+                'timezone_offset': '-480',
+                'platform': 'web',
+                'web_location': '333.1387',
+              },
+            ),
+            cancelToken: cancelToken,
+          );
+        } on DioException catch (e) {
+          if (e.type == DioExceptionType.cancel) {
+            log('动态列表请求已取消: $e', error: e);
+            break;
+          }
+          rethrow; // 其他 Dio 错误继续抛出，交由外层 catch 处理
         }
 
-        offset = response.data['data']['offset'];
+        // 取消就退出
+        if (cancelToken.isCancelled) break;
 
-        for (var item in response.data['data']['items']) {
+        final data = response.data;
+        if (data == null) break;
+        offset = data['data']['offset'] ?? '';
+        bool hasMore = data['data']['has_more'] ?? false;
+
+        for (var item in data['data']['items'] ?? []) {
           if (item['type'] == 'DYNAMIC_TYPE_FORWARD') //为转发动态
           {
             UserModel().dynamicItems.add(DynamicItem.fromJson(item));
           }
         }
-        if (response.data['data']['has_more'] == false) break;
+        if (!hasMore) break;
 
         updateCount(UserModel().dynamicItems.length);
-
         dynamicDataSource.notifyListeners(); // 刷新数据表格
 
         await Future.delayed(Duration(milliseconds: 2500));
+
         if (UserModel().dynamicItems.length >= 400) {
           updateLoadStatus(LoadState.done);
           dynamicDataSource.notifyListeners(); // 刷新数据表格
           break;
         }
       } while (true);
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.cancel) return;
-
-      if (!state.isDisposed) {
-        log('动态列表请求异常: $e');
-        updateLoadStatus(LoadState.error);
-      }
     } catch (e) {
-      log('初始化动态列表失败: $e');
-      //updateLoadStatus(LoadState.error);
+      if (!cancelToken.isCancelled) {
+        log('初始化动态列表失败: $e', error: e);
+        updateLoadStatus(LoadState.error);
+        return;
+      }
     }
   }
 
@@ -153,15 +155,8 @@ class DynamicState {
   final LoadState loadState;
   final int count;
 
-  final bool isDisposed;
-  final CancelToken cancelToken;
   // 构造函数
-  DynamicState({
-    this.loadState = LoadState.none,
-    this.count = 0,
-    required this.isDisposed,
-    required this.cancelToken,
-  });
+  DynamicState({this.loadState = LoadState.none, this.count = 0});
 
   DynamicState copyWith({
     LoadState? loadState,
@@ -172,8 +167,6 @@ class DynamicState {
     return DynamicState(
       loadState: loadState ?? this.loadState,
       count: count ?? this.count,
-      isDisposed: isDisposed ?? this.isDisposed,
-      cancelToken: cancelToken ?? this.cancelToken,
     );
   }
 }

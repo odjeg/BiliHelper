@@ -40,7 +40,7 @@ final class DynamicProvider extends $NotifierProvider<Dynamic, DynamicState> {
   }
 }
 
-String _$dynamicHash() => r'5a1feb6e3581d94f5c92aef53d64b2c3c5a7e1bd';
+String _$dynamicHash() => r'a50a81badecd3823d06ee136c361bb3cbf6a8898';
 
 abstract class _$Dynamic extends $Notifier<DynamicState> {
   DynamicState build();

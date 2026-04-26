@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:math' as math;
-
 import 'package:bilihelper/common/constants/load_state.dart';
 import 'package:bilihelper/common/services/bili_x_dio_service.dart';
 import 'package:bilihelper/common/services/secure_storage_service.dart';
@@ -9,24 +8,23 @@ import 'package:bilihelper/models/user/lottery_model/lottery_item.dart';
 import 'package:bilihelper/models/user/user_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 part 'lottery_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class Lottery extends _$Lottery {
   @override
   LotteryState build() {
-    CancelToken cancelToken = CancelToken();
-    bool isDisposed = false;
+    _cancelToken = CancelToken();
     ref.onDispose(() {
-      isDisposed = true;
-      cancelToken.cancel();
+      _cancelToken?.cancel();
     });
-    return LotteryState(isDisposed: isDisposed, cancelToken: cancelToken);
+    return LotteryState();
   }
 
   final LotteryDataSource lotteryDataSource = LotteryDataSource();
+  CancelToken? _cancelToken;
   static const List<String> commentList = [
     "希望好运眷顾我✨",
     "浅浅蹲一波中奖(๑•̀ㅂ•́)و✧",
@@ -103,8 +101,8 @@ class Lottery extends _$Lottery {
     lotteryDataSource.notifyListeners();
   }
 
-  Future<void> _getLotteryInfo() async {
-    if (state.isDisposed) return;
+  Future<void> _getLotteryInfo(CancelToken cancelToken) async {
+    if (cancelToken.isCancelled) return;
 
     updateLoadStatus(LoadState.loading);
     try {
@@ -113,13 +111,24 @@ class Lottery extends _$Lottery {
           'lottery csrf null';
 
       for (var item in UserModel().lotteryItems) {
-        if (state.isDisposed) return;
-        var pageDetailResponse = await BiliXDioService.get(
-          '/polymer/web-dynamic/v1/detail',
-          queryParameters: {'id': item.businessId},
-          cancelToken: state.cancelToken,
-        );
-        if (pageDetailResponse.data == null) return;
+        Response<dynamic> pageDetailResponse;
+        try {
+          pageDetailResponse = await BiliXDioService.get(
+            '/polymer/web-dynamic/v1/detail',
+            queryParameters: {'id': item.businessId},
+            cancelToken: cancelToken,
+          );
+        } on DioException catch (e) {
+          if (e.type == DioExceptionType.cancel) {
+            log('抽奖信息请求已取消: $e', error: e);
+            return;
+          }
+          rethrow; // 其他 Dio 错误继续抛出，交由外层 catch 处理
+        }
+
+        if (cancelToken.isCancelled) break;
+        if (pageDetailResponse.data == null) break;
+
         if (pageDetailResponse.data['code'] == 0) {
           if (pageDetailResponse
                       .data['data']['item']['modules']['module_dynamic']['additional'] ==
@@ -146,20 +155,31 @@ class Lottery extends _$Lottery {
                 )
                 ? '已转发'
                 : '未转发';
+            Response<dynamic> lotteryDetailResponse;
+            try {
+              lotteryDetailResponse = await BiliXDioService.get(
+                'https://api.vc.bilibili.com/lottery_svr/v1/lottery_svr/lottery_notice',
+                queryParameters: {
+                  'business_id': item.businessId,
+                  'business_type': 1,
+                  'csrf': csrf,
+                  'web_location': '333.1330',
+                  'x-bili-device-req-json':
+                      '{"platform":"web","device":"pc","spmid":"333.1330"}',
+                },
+                cancelToken: cancelToken,
+              );
+            } on DioException catch (e) {
+              if (e.type == DioExceptionType.cancel) {
+                log('抽奖详情请求已取消: $e', error: e);
+                return;
+              }
+              rethrow; // 其他 Dio 错误继续抛出，交由外层 catch 处理
+            }
 
-            var lotteryDetailResponse = await BiliXDioService.get(
-              'https://api.vc.bilibili.com/lottery_svr/v1/lottery_svr/lottery_notice',
-              queryParameters: {
-                'business_id': item.businessId,
-                'business_type': 1,
-                'csrf': csrf,
-                'web_location': '333.1330',
-                'x-bili-device-req-json':
-                    '{"platform":"web","device":"pc","spmid":"333.1330"}',
-              },
-              cancelToken: state.cancelToken,
-            );
-            if (lotteryDetailResponse.data == null) return;
+            if (cancelToken.isCancelled) break;
+            if (lotteryDetailResponse.data == null) break;
+
             if (lotteryDetailResponse.data['code'] == 0) {
               //code为0，说明是官方抽奖
               item.lotteryType = '互动抽奖';
@@ -196,19 +216,29 @@ class Lottery extends _$Lottery {
             item.name = pageDetailResponse
                 .data['data']['item']['modules']['module_author']['name'];
 
-            var lotteryDetailResponse = await BiliXDioService.get(
-              'https://api.vc.bilibili.com/lottery_svr/v1/lottery_svr/lottery_notice',
-              queryParameters: {
-                'business_id': rid,
-                'business_type': 10,
-                'csrf': csrf,
-                'web_location': '333.1330',
-                'x-bili-device-req-json':
-                    '{"platform":"web","device":"pc","spmid":"333.1330"}',
-              },
-              cancelToken: state.cancelToken,
-            );
-            if (lotteryDetailResponse.data == null) return;
+            Response<dynamic> lotteryDetailResponse;
+            try {
+              lotteryDetailResponse = await BiliXDioService.get(
+                'https://api.vc.bilibili.com/lottery_svr/v1/lottery_svr/lottery_notice',
+                queryParameters: {
+                  'business_id': rid,
+                  'business_type': 10,
+                  'csrf': csrf,
+                  'web_location': '333.1330',
+                  'x-bili-device-req-json':
+                      '{"platform":"web","device":"pc","spmid":"333.1330"}',
+                },
+                cancelToken: cancelToken,
+              );
+            } on DioException catch (e) {
+              if (e.type == DioExceptionType.cancel) {
+                log('抽奖详情请求已取消: $e', error: e);
+                return;
+              }
+              rethrow; // 其他 Dio 错误继续抛出，交由外层 catch 处理
+            }
+            if (cancelToken.isCancelled) break;
+            if (lotteryDetailResponse.data == null) break;
             item.followed =
                 lotteryDetailResponse.data['data']['followed'] ?? false;
             item.lotteryTime =
@@ -218,34 +248,28 @@ class Lottery extends _$Lottery {
         }
         await Future.delayed(const Duration(seconds: 2));
       }
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.cancel) return;
-
-      if (!state.isDisposed) {
-        log('抽奖信息请求异常: $e');
-        updateLoadStatus(LoadState.error);
-      }
     } catch (e) {
-      if (!state.isDisposed) {
-        log('获取抽奖信息失败: $e');
-        //updateLoadStatus(LoadState.error);
+      log('获取抽奖信息失败: $e', error: e);
+      if (!cancelToken.isCancelled) {
+        updateLoadStatus(LoadState.error);
       }
     }
   }
 
   Future<void> startLottery() async {
-    if (state.isDisposed) return;
+    final CancelToken cancelToken = _cancelToken!;
+    if (cancelToken.isCancelled) return;
 
     log('开始抽奖...');
     UserModel().lotteryItems.clear();
     updateLoadStatus(LoadState.loading, count: 0);
 
     await _getClipboardText();
-    await _getLotteryInfo();
+    await _getLotteryInfo(cancelToken);
 
     try {
       for (var item in UserModel().lotteryItems) {
-        if (state.isDisposed) return;
+        if (cancelToken.isCancelled) break;
 
         updateLoadStatus(LoadState.loading, count: state.count + 1);
         bool flag = false;
@@ -260,93 +284,140 @@ class Lottery extends _$Lottery {
           //需要关注且转发
           if (item.followed == false) {
             flag = true;
-            var response = await BiliXDioService.userModify(
-              fid: item.mid!,
-              act: 1,
-              cancelToken: state.cancelToken,
-            );
-            if (response.statusCode == 200 && response.data['code'] == 0) {
-              item.followed = true;
-            } else {
-              log('关注失败: ${response.data}');
+            try {
+              var response = await BiliXDioService.userModify(
+                fid: item.mid!,
+                act: 1,
+                cancelToken: cancelToken,
+              );
+              if (response.statusCode == 200 && response.data['code'] == 0) {
+                item.followed = true;
+              } else {
+                log('关注失败: ${response.data}');
+              }
+            } on DioException catch (e) {
+              if (e.type == DioExceptionType.cancel) {
+                log('关注请求已取消: $e', error: e);
+                return;
+              }
+              rethrow;
             }
           }
           if (item.isForward == '未转发') {
             flag = true;
-            var response = await BiliXDioService.repostDynamic(
-              data: {
-                'type': 1,
-                'scene': 4,
-                'dyn_id_str': item.businessId,
-                'raw_text': '互动抽奖',
-              },
-              cancelToken: state.cancelToken,
-            );
-            if (response.statusCode == 200 && response.data['code'] == 0) {
-              item.isForward = '已转发';
-            } else {
-              log('转发失败: ${response.data}');
+            try {
+              var response = await BiliXDioService.repostDynamic(
+                data: {
+                  'type': 1,
+                  'scene': 4,
+                  'dyn_id_str': item.businessId,
+                  'raw_text': '互动抽奖',
+                },
+                cancelToken: cancelToken,
+              );
+              if (response.statusCode == 200 && response.data['code'] == 0) {
+                item.isForward = '已转发';
+              } else {
+                log('转发失败: ${response.data}');
+              }
+            } on DioException catch (e) {
+              if (e.type == DioExceptionType.cancel) {
+                log('转发请求已取消: $e', error: e);
+                return;
+              }
+              rethrow;
             }
           }
           lotteryDataSource.notifyListeners();
         } else if ((item.lotteryType == '直播预约' || item.lotteryType == '视频预约') &&
             item.isForward == '未预约') {
           flag = true;
-          log('预约抽奖: ${item.businessId} ${item.rid}');
-          var response = await BiliXDioService.reserveLottery(
-            dynamicIdStr: item.businessId,
-            reserveId: item.rid!,
-            cancelToken: state.cancelToken,
-          );
-          if (response.statusCode == 200 && response.data['code'] == 0) {
-            item.isForward = '已预约';
-            log('预约成功: ${response.data}');
-          } else {
-            log('预约失败: ${response.data}');
+          try {
+            var response = await BiliXDioService.reserveLottery(
+              dynamicIdStr: item.businessId,
+              reserveId: item.rid!,
+              cancelToken: cancelToken,
+            );
+            if (response.statusCode == 200 && response.data['code'] == 0) {
+              item.isForward = '已预约';
+              log('预约成功: ${response.data}');
+            } else {
+              log('预约失败: ${response.data}');
+            }
+          } on DioException catch (e) {
+            if (e.type == DioExceptionType.cancel) {
+              log('预约请求已取消: $e', error: e);
+              return;
+            }
+            rethrow;
           }
           lotteryDataSource.notifyListeners();
         } else if (item.lotteryType == '转发抽奖') {
           //需要转发点赞评论
           flag = true;
-          var thumbResponse = await BiliXDioService.userThumb(
-            dynamic_id_str: item.businessId,
-            up: 1,
-          );
-          if (thumbResponse.statusCode == 200 &&
-              thumbResponse.data['code'] == 0) {
-            log('点赞: ${thumbResponse.data}');
-            await Future.delayed(const Duration(seconds: 2));
-          } else {
-            log('点赞失败: ${thumbResponse.data}');
+          try {
+            var thumbResponse = await BiliXDioService.userThumb(
+              dynamic_id_str: item.businessId,
+              up: 1,
+            );
+            if (thumbResponse.statusCode == 200 &&
+                thumbResponse.data['code'] == 0) {
+              log('点赞: ${thumbResponse.data}');
+              await Future.delayed(const Duration(seconds: 2));
+            } else {
+              log('点赞失败: ${thumbResponse.data}');
+            }
+          } on DioException catch (e) {
+            if (e.type == DioExceptionType.cancel) {
+              log('点赞请求已取消: $e', error: e);
+              return;
+            }
+            rethrow;
           }
-          var replyResponse = await BiliXDioService.userReplyAdd(
-            oid: item.commentIdStr!,
-            message: commentList[math.Random().nextInt(commentList.length)],
-            type: 11,
-            cancelToken: state.cancelToken,
-          );
-          if (replyResponse.statusCode == 200 &&
-              replyResponse.data['code'] == 0) {
-            await Future.delayed(const Duration(seconds: 2));
-            log('评论: ${replyResponse.data}');
-          } else {
-            log('评论失败: ${replyResponse.data}');
+          try {
+            var replyResponse = await BiliXDioService.userReplyAdd(
+              oid: item.commentIdStr!,
+              message: commentList[math.Random().nextInt(commentList.length)],
+              type: 11,
+              cancelToken: cancelToken,
+            );
+            if (replyResponse.statusCode == 200 &&
+                replyResponse.data['code'] == 0) {
+              await Future.delayed(const Duration(seconds: 2));
+              log('评论: ${replyResponse.data}');
+            } else {
+              log('评论失败: ${replyResponse.data}');
+            }
+          } on DioException catch (e) {
+            if (e.type == DioExceptionType.cancel) {
+              log('评论请求已取消: $e', error: e);
+              return;
+            }
+            rethrow;
           }
           if (item.isForward == '未转发') {
-            var respostResponse = await BiliXDioService.repostDynamic(
-              data: {
-                'type': 1,
-                'scene': 4,
-                'dyn_id_str': item.businessId,
-                'raw_text': '转发抽奖',
-              },
-              cancelToken: state.cancelToken,
-            );
-            if (respostResponse.statusCode == 200 &&
-                respostResponse.data['code'] == 0) {
-              log('转发: ${respostResponse.data}');
-            } else {
-              log('转发失败: ${respostResponse.data}');
+            try {
+              var respostResponse = await BiliXDioService.repostDynamic(
+                data: {
+                  'type': 1,
+                  'scene': 4,
+                  'dyn_id_str': item.businessId,
+                  'raw_text': '转发抽奖',
+                },
+                cancelToken: cancelToken,
+              );
+              if (respostResponse.statusCode == 200 &&
+                  respostResponse.data['code'] == 0) {
+                log('转发: ${respostResponse.data}');
+              } else {
+                log('转发失败: ${respostResponse.data}');
+              }
+            } on DioException catch (e) {
+              if (e.type == DioExceptionType.cancel) {
+                log('转发请求已取消: $e', error: e);
+                return;
+              }
+              rethrow;
             }
             await Future.delayed(const Duration(seconds: 2));
           }
@@ -358,19 +429,13 @@ class Lottery extends _$Lottery {
           await Future.delayed(const Duration(seconds: 10));
         }
       }
-      updateLoadStatus(LoadState.done);
-    } on DioException catch (e) {
-      // 取消请求 → 安静退出
-      if (e.type == DioExceptionType.cancel) return;
-
-      if (!state.isDisposed) {
-        log('抽奖列表请求异常: $e');
-        updateLoadStatus(LoadState.error);
+      if (!cancelToken.isCancelled) {
+        updateLoadStatus(LoadState.done);
       }
     } catch (e) {
-      if (!state.isDisposed) {
-        log('初始化抽奖列表失败: $e');
-        //updateLoadStatus(LoadState.error);
+      log('初始化抽奖列表失败: $e');
+      if (!cancelToken.isCancelled) {
+        updateLoadStatus(LoadState.error);
       }
     }
   }
@@ -379,28 +444,13 @@ class Lottery extends _$Lottery {
 class LotteryState {
   final LoadState loadState;
   int count;
-
-  final bool isDisposed;
-  final CancelToken cancelToken;
   // 构造函数
-  LotteryState({
-    this.loadState = LoadState.none,
-    this.count = 0,
-    required this.isDisposed,
-    required this.cancelToken,
-  });
+  LotteryState({this.loadState = LoadState.none, this.count = 0});
 
-  LotteryState copyWith({
-    LoadState? loadState,
-    int? count,
-    bool? isDisposed,
-    CancelToken? cancelToken,
-  }) {
+  LotteryState copyWith({LoadState? loadState, int? count}) {
     return LotteryState(
       loadState: loadState ?? this.loadState,
       count: count ?? this.count,
-      isDisposed: isDisposed ?? this.isDisposed,
-      cancelToken: cancelToken ?? this.cancelToken,
     );
   }
 }

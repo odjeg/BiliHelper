@@ -15,15 +15,14 @@ class Following extends _$Following {
   @override
   FollowingState build() {
     // ✅ 生命周期由 build 管理，invalidate 就会重置
-    final cancelToken = CancelToken();
-    var isDisposed = false;
+    _cancelToken = CancelToken();
     ref.onDispose(() {
-      isDisposed = true;
-      cancelToken.cancel();
+      _cancelToken?.cancel();
     });
-    return FollowingState(isDisposed: isDisposed, cancelToken: cancelToken);
+    return FollowingState();
   }
 
+  CancelToken? _cancelToken;
   final FollowingDataSource followingDataSource = FollowingDataSource();
 
   void updateLoadStatus(LoadState loadState) {
@@ -39,8 +38,10 @@ class Following extends _$Following {
   }
 
   Future<void> initFollowingItems() async {
-    log('初始化关注列表...${state.isDisposed}');
-    if (state.isDisposed) return;
+    final CancelToken cancelToken = _cancelToken!;
+    if (cancelToken.isCancelled) return;
+
+    log('初始化关注列表...');
 
     updateLoadStatus(LoadState.loading);
     UserModel().followingItems.clear();
@@ -48,44 +49,41 @@ class Following extends _$Following {
 
     int pn = 0;
     String? vmid = await SecureStorageService.getToken('DedeUserID');
-    if (vmid == null) {
-      updateLoadStatus(LoadState.error);
-      return;
-    }
+    Response<dynamic> response;
 
     try {
       do {
         log('初始化关注列表...');
-
-        final response = await BiliXDioService.get(
-          '/relation/followings',
-          queryParameters: {
-            'order': 'desc',
-            'order_type': '',
-            'vmid': vmid,
-            'pn': ++pn,
-            'ps': 50,
-            'gaia_source': 'main_web',
-            'web_location': '333.1387',
-          },
-          cancelToken: state.cancelToken,
-        );
-
-        if (state.isDisposed ||
-            response.data == null ||
-            response.data['data'] == null) {
-          return;
+        try {
+          response = await BiliXDioService.get(
+            '/relation/followings',
+            queryParameters: {
+              'order': 'desc',
+              'order_type': '',
+              'vmid': vmid,
+              'pn': ++pn,
+              'ps': 50,
+              'gaia_source': 'main_web',
+              'web_location': '333.1387',
+            },
+            cancelToken: cancelToken,
+          );
+        } on DioException catch (e) {
+          if (e.type == DioExceptionType.cancel) {
+            log('关注列表请求已取消: $e', error: e);
+            break;
+          }
+          rethrow;
         }
-
+        // 取消就退出
+        if (cancelToken.isCancelled) break;
         final data = response.data;
-
-        final list = data['data']['list'];
+        if (data == null) break;
+        final list = data['data']['list'] ?? [];
         final total = data['data']['total'] ?? 0;
 
-        if (list != null) {
-          for (var item in list) {
-            UserModel().followingItems.add(FollowingItem.fromJson(item));
-          }
+        for (var item in list) {
+          UserModel().followingItems.add(FollowingItem.fromJson(item));
         }
 
         updateLoadTotal(total);
@@ -96,25 +94,17 @@ class Following extends _$Following {
         await Future.delayed(Duration(milliseconds: 500));
 
         if (pn * 50 >= total) {
+          followingDataSource.notifyListeners();
           updateLoadStatus(LoadState.done);
           break;
         }
       } while (true);
-    } on DioException catch (e) {
-      // 取消请求 → 安静退出
-      if (e.type == DioExceptionType.cancel) return;
-
-      if (!state.isDisposed) {
-        log('关注列表请求异常: $e');
-        updateLoadStatus(LoadState.error);
-      }
     } catch (e) {
-      if (!state.isDisposed) {
-        log('初始化关注列表失败: $e');
+      log('初始化关注列表失败: $e', error: e);
+      if (!cancelToken.isCancelled) {
         updateLoadStatus(LoadState.error);
       }
     }
-    followingDataSource.notifyListeners();
   }
 }
 
@@ -122,31 +112,18 @@ class FollowingState {
   final LoadState loadState;
   final int total;
   final int count;
-
-  final bool isDisposed;
-  final CancelToken cancelToken;
   // 构造函数
   FollowingState({
     this.loadState = LoadState.none,
     this.total = 0,
     this.count = 0,
-    required this.isDisposed,
-    required this.cancelToken,
   });
 
-  FollowingState copyWith({
-    LoadState? loadState,
-    int? total,
-    int? count,
-    bool? isDisposed,
-    CancelToken? cancelToken,
-  }) {
+  FollowingState copyWith({LoadState? loadState, int? total, int? count}) {
     return FollowingState(
       loadState: loadState ?? this.loadState,
       total: total ?? this.total,
       count: count ?? this.count,
-      isDisposed: isDisposed ?? this.isDisposed,
-      cancelToken: cancelToken ?? this.cancelToken,
     );
   }
 }
