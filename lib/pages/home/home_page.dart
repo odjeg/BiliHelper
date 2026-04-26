@@ -1,3 +1,4 @@
+import 'package:bilihelper/models/home/home_provider.dart';
 import 'package:bilihelper/pages/home/my_nav_rail.dart';
 import 'package:bilihelper/pages/lottery/lottery_page.dart';
 import 'package:bilihelper/pages/space/space_page.dart';
@@ -15,6 +16,12 @@ class _HomePageState extends ConsumerState<HomePage> {
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
   final List<Widget> _pages = [SpacePage(), LotteryPage()];
+  @override
+  void initState() {
+    super.initState();
+    ref.read(homeProvider.notifier).initProfile();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

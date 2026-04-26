@@ -11,8 +11,6 @@ final homeProvider = NotifierProvider.autoDispose<HomeNotifier, HomeState>(
 class HomeNotifier extends Notifier<HomeState> {
   @override
   HomeState build() {
-    // 页面一加载，自动初始化用户信息（只执行一次）
-    initProfile();
     return HomeState();
   }
 
