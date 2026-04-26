@@ -1,4 +1,3 @@
-import 'package:bilihelper/models/home/home_provider.dart';
 import 'package:bilihelper/pages/home/my_nav_rail.dart';
 import 'package:bilihelper/pages/lottery/lottery_page.dart';
 import 'package:bilihelper/pages/space/space_page.dart';
@@ -40,6 +39,5 @@ class _HomePageState extends ConsumerState<HomePage> {
         ],
       ),
     );
-    ;
   }
 }

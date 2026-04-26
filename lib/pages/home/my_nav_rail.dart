@@ -1,7 +1,4 @@
 import 'package:bilihelper/models/home/home_provider.dart';
-import 'package:bilihelper/models/space/dynamic_provider.dart';
-import 'package:bilihelper/models/space/following_provider.dart';
-import 'package:bilihelper/models/space/lottery_provider.dart';
 import 'package:bilihelper/models/user/user_model.dart';
 import 'package:bilihelper/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
@@ -72,25 +69,18 @@ class _MyNavRailState extends ConsumerState<MyNavRail> {
               icon: Icon(Icons.logout),
               iconSize: 20,
               onPressed: () async {
-                await UserModel().logout();
+                await UserModel().logout(ref);
 
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => LoginPage()),
                   (route) => false,
                 );
-
-                /*
-                await SecureStorageService.deleteToken();
-                dynamicInfoList.clear();
-                followingList.clear();
-                userLotteryInfoList.clear();*/
               },
             ),
           ],
         ),
         onDestinationSelected: (int index) {
-          //developer.log('index: $index');
           widget.onDestinationSelected(index);
         },
       ),

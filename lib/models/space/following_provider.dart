@@ -14,16 +14,17 @@ part 'following_provider.g.dart';
 class Following extends _$Following {
   @override
   FollowingState build() {
+    // ✅ 生命周期由 build 管理，invalidate 就会重置
+    final cancelToken = CancelToken();
+    var isDisposed = false;
     ref.onDispose(() {
-      _isDisposed = true;
-      _cancelToken.cancel();
+      isDisposed = true;
+      cancelToken.cancel();
     });
-    return FollowingState();
+    return FollowingState(isDisposed: isDisposed, cancelToken: cancelToken);
   }
 
   final FollowingDataSource followingDataSource = FollowingDataSource();
-  CancelToken _cancelToken = CancelToken();
-  bool _isDisposed = false;
 
   void updateLoadStatus(LoadState loadState) {
     state = state.copyWith(loadState: loadState);
@@ -38,10 +39,10 @@ class Following extends _$Following {
   }
 
   Future<void> initFollowingItems() async {
-    if (_isDisposed) return;
+    log('初始化关注列表...${state.isDisposed}');
+    if (state.isDisposed) return;
 
     updateLoadStatus(LoadState.loading);
-    _cancelToken = CancelToken();
     UserModel().followingItems.clear();
     followingDataSource.notifyListeners();
 
@@ -54,8 +55,6 @@ class Following extends _$Following {
 
     try {
       do {
-        if (_isDisposed) return;
-
         log('初始化关注列表...');
 
         final response = await BiliXDioService.get(
@@ -69,13 +68,16 @@ class Following extends _$Following {
             'gaia_source': 'main_web',
             'web_location': '333.1387',
           },
-          cancelToken: _cancelToken,
+          cancelToken: state.cancelToken,
         );
 
-        if (_isDisposed) return;
+        if (state.isDisposed ||
+            response.data == null ||
+            response.data['data'] == null) {
+          return;
+        }
 
         final data = response.data;
-        if (data == null) break;
 
         final list = data['data']['list'];
         final total = data['data']['total'] ?? 0;
@@ -93,23 +95,21 @@ class Following extends _$Following {
 
         await Future.delayed(Duration(milliseconds: 500));
 
-        if (pn * 50 >= total) break;
+        if (pn * 50 >= total) {
+          updateLoadStatus(LoadState.done);
+          break;
+        }
       } while (true);
-
-      // 全部加载完成
-      if (!_isDisposed) {
-        updateLoadStatus(LoadState.done);
-      }
     } on DioException catch (e) {
       // 取消请求 → 安静退出
       if (e.type == DioExceptionType.cancel) return;
 
-      if (!_isDisposed) {
+      if (!state.isDisposed) {
         log('关注列表请求异常: $e');
         updateLoadStatus(LoadState.error);
       }
     } catch (e) {
-      if (!_isDisposed) {
+      if (!state.isDisposed) {
         log('初始化关注列表失败: $e');
         updateLoadStatus(LoadState.error);
       }
@@ -122,18 +122,31 @@ class FollowingState {
   final LoadState loadState;
   final int total;
   final int count;
+
+  final bool isDisposed;
+  final CancelToken cancelToken;
   // 构造函数
   FollowingState({
     this.loadState = LoadState.none,
     this.total = 0,
     this.count = 0,
+    required this.isDisposed,
+    required this.cancelToken,
   });
 
-  FollowingState copyWith({LoadState? loadState, int? total, int? count}) {
+  FollowingState copyWith({
+    LoadState? loadState,
+    int? total,
+    int? count,
+    bool? isDisposed,
+    CancelToken? cancelToken,
+  }) {
     return FollowingState(
       loadState: loadState ?? this.loadState,
       total: total ?? this.total,
       count: count ?? this.count,
+      isDisposed: isDisposed ?? this.isDisposed,
+      cancelToken: cancelToken ?? this.cancelToken,
     );
   }
 }

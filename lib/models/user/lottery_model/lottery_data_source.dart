@@ -11,7 +11,7 @@ class LotteryDataSource extends DataGridSource {
           cells: [
             DataGridCell<String>(
               columnName: 'business_id',
-              value: e.business_id,
+              value: e.businessId,
             ),
             DataGridCell<int?>(columnName: 'mid', value: e.mid),
             DataGridCell<String?>(columnName: 'name', value: e.name),
@@ -21,11 +21,11 @@ class LotteryDataSource extends DataGridSource {
             ),
             DataGridCell<String>(
               columnName: 'lottery_time',
-              value: e.lottery_time == null
+              value: e.lotteryTime == null
                   ? ''
                   : DateFormat('yyyy-MM-dd HH:mm:ss').format(
                       DateTime.fromMillisecondsSinceEpoch(
-                        e.lottery_time! * 1000,
+                        e.lotteryTime! * 1000,
                       ).toLocal(),
                     ),
             ),

@@ -11,28 +11,28 @@ class DynamicDataSource extends DataGridSource {
         .map(
           (e) => DataGridRow(
             cells: [
-              DataGridCell<String>(columnName: 'id_str', value: e.id_str),
+              DataGridCell<String>(columnName: 'id_str', value: e.idStr),
               DataGridCell<String>(
                 columnName: 'pub_ts',
                 value: DateFormat('yyyy-MM-dd HH:mm:ss').format(
                   DateTime.fromMillisecondsSinceEpoch(
-                    int.parse(e.pub_ts) * 1000,
+                    int.parse(e.pubTs) * 1000,
                   ).toLocal(),
                 ),
               ),
               DataGridCell<String>(
                 columnName: 'orig_id_str',
-                value: e.orig_id_str,
+                value: e.origIdStr,
               ),
-              DataGridCell<int>(columnName: 'orig_mid', value: e.orig_mid),
-              DataGridCell<String>(columnName: 'orig_name', value: e.orig_name),
+              DataGridCell<int>(columnName: 'orig_mid', value: e.origMid),
+              DataGridCell<String>(columnName: 'orig_name', value: e.origName),
               DataGridCell<String>(
                 columnName: 'following',
                 value: e.following == true ? '是' : '否',
               ),
               DataGridCell<String>(
                 columnName: 'dynamic_text',
-                value: e.dynamic_text,
+                value: e.dynamicText,
               ),
             ],
           ),

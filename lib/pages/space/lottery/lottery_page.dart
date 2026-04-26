@@ -12,10 +12,8 @@ class LotteryPage extends ConsumerStatefulWidget {
   ConsumerState<LotteryPage> createState() => _LotteryPageState();
 }
 
-class _LotteryPageState extends ConsumerState<LotteryPage>
-    with AutomaticKeepAliveClientMixin {
+class _LotteryPageState extends ConsumerState<LotteryPage> {
   @override
-  bool get wantKeepAlive => true;
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(

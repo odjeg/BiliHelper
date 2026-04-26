@@ -131,8 +131,8 @@ class BiliXDioService {
 
   // 预约抽奖
   static Future<Response<dynamic>> reserveLottery({
-    required String dynamic_id_str,
-    required int reserve_id,
+    required String dynamicIdStr,
+    required int reserveId,
     CancelToken? cancelToken,
   }) async {
     var response = await _dio.post(
@@ -142,8 +142,8 @@ class BiliXDioService {
       },
       data: {
         'cur_btn_status': 1,
-        'dynamic_id_str': dynamic_id_str,
-        'reserve_id': reserve_id,
+        'dynamic_id_str': dynamicIdStr,
+        'reserve_id': reserveId,
       },
       options: Options(
         headers: {
@@ -151,7 +151,7 @@ class BiliXDioService {
           'content-type': 'application/json',
           'origin': 'https://space.bilibili.com',
           'referer':
-              'https://www.bilibili.com/opus/$dynamic_id_str?spm_id_from=333.1387.0.0&spm_id_from=333.1369.0.0',
+              'https://www.bilibili.com/opus/$dynamicIdStr?spm_id_from=333.1387.0.0&spm_id_from=333.1369.0.0',
         },
       ),
       cancelToken: cancelToken,
@@ -226,7 +226,7 @@ class BiliXDioService {
   //get
   static Future<Response<dynamic>> get(
     String path, {
-    dynamic? queryParameters,
+    dynamic queryParameters,
     CancelToken? cancelToken,
   }) async {
     final response = await _dio.get(

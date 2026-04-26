@@ -15,10 +15,8 @@ class SpacePage extends StatefulWidget {
   State<SpacePage> createState() => _SpacePageState();
 }
 
-class _SpacePageState extends State<SpacePage>
-    with AutomaticKeepAliveClientMixin {
+class _SpacePageState extends State<SpacePage> {
   @override
-  bool get wantKeepAlive => true;
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,

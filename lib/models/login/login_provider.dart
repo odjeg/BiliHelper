@@ -101,6 +101,7 @@ class LoginNotifier extends Notifier<LoginState> {
     await SecureStorageService.getBuvid();
     await SecureStorageService.getWbi();
     _stopPolling();
+
     // 登录成功后，跳转到主页面
     state = state.copyWith(message: '登录成功', isLoginSuccess: true);
   }
@@ -128,10 +129,5 @@ class LoginNotifier extends Notifier<LoginState> {
   void _stopPolling() {
     _pollingTimer?.cancel();
     _pollingTimer = null;
-  }
-
-  @override
-  void dispose() {
-    _stopPolling();
   }
 }

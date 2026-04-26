@@ -19,16 +19,21 @@ part 'dynamic_provider.g.dart';
 class Dynamic extends _$Dynamic {
   @override
   DynamicState build() {
+    final cancelToken = CancelToken();
+    var isDisposed = false;
     ref.onDispose(() {
-      _isDisposed = true;
-      _cancelToken.cancel();
+      isDisposed = true;
+      cancelToken.cancel();
     });
-    return DynamicState(loadState: LoadState.none, count: 0);
+    return DynamicState(
+      loadState: LoadState.none,
+      count: 0,
+      isDisposed: isDisposed,
+      cancelToken: cancelToken,
+    );
   }
 
   final DynamicDataSource dynamicDataSource = DynamicDataSource();
-  CancelToken _cancelToken = CancelToken();
-  bool _isDisposed = false;
 
   void updateLoadStatus(LoadState loadState) {
     state = state.copyWith(loadState: loadState);
@@ -40,19 +45,16 @@ class Dynamic extends _$Dynamic {
 
   Future<void> initDynamicInfo() async {
     updateLoadStatus(LoadState.loading);
-    if (_isDisposed) return;
+    if (state.isDisposed) return;
 
     String? host_mid = await SecureStorageService.getToken('DedeUserID');
     UserModel().dynamicItems.clear();
     dynamicDataSource.notifyListeners();
-    _cancelToken = CancelToken();
     String? offset = '';
     Response<dynamic> response;
 
     try {
       do {
-        if (_isDisposed) return;
-
         log('初始化动态列表...');
 
         response = await BiliXDioService.get(
@@ -66,11 +68,15 @@ class Dynamic extends _$Dynamic {
               'web_location': '333.1387',
             },
           ),
-          cancelToken: _cancelToken,
+          cancelToken: state.cancelToken,
         );
+        if (state.isDisposed ||
+            response.data == null ||
+            response.data['data'] == null) {
+          return;
+        }
 
         offset = response.data['data']['offset'];
-        if (offset == null) break;
 
         for (var item in response.data['data']['items']) {
           if (item['type'] == 'DYNAMIC_TYPE_FORWARD') //为转发动态
@@ -85,22 +91,23 @@ class Dynamic extends _$Dynamic {
         dynamicDataSource.notifyListeners(); // 刷新数据表格
 
         await Future.delayed(Duration(milliseconds: 2500));
-      } while (UserModel().dynamicItems.length < 400);
-      updateLoadStatus(LoadState.done);
+        if (UserModel().dynamicItems.length >= 400) {
+          updateLoadStatus(LoadState.done);
+          dynamicDataSource.notifyListeners(); // 刷新数据表格
+          break;
+        }
+      } while (true);
     } on DioException catch (e) {
       if (e.type == DioExceptionType.cancel) return;
 
-      if (!_isDisposed) {
+      if (!state.isDisposed) {
         log('动态列表请求异常: $e');
         updateLoadStatus(LoadState.error);
       }
     } catch (e) {
       log('初始化动态列表失败: $e');
-      updateLoadStatus(LoadState.error);
-      return;
+      //updateLoadStatus(LoadState.error);
     }
-    updateLoadStatus(LoadState.done);
-    dynamicDataSource.notifyListeners(); // 刷新数据表格
   }
 
   Future<void> deleteSelectedDynamic(
@@ -119,13 +126,13 @@ class Dynamic extends _$Dynamic {
 
       // 本地删除
       UserModel().dynamicItems.removeWhere(
-        (element) => element.id_str == dynamic_id_str,
+        (element) => element.idStr == dynamic_id_str,
       );
 
       dynamicDataSource.notifyListeners();
       // 请求接口
       try {
-        var response = await BiliXDioService.removeDynamic(
+        var _ = await BiliXDioService.removeDynamic(
           dynamic_id_str: dynamic_id_str,
           dyn_type: 1,
         );
@@ -145,13 +152,28 @@ class Dynamic extends _$Dynamic {
 class DynamicState {
   final LoadState loadState;
   final int count;
-  // 构造函数
-  DynamicState({this.loadState = LoadState.none, this.count = 0});
 
-  DynamicState copyWith({LoadState? loadState, int? count}) {
+  final bool isDisposed;
+  final CancelToken cancelToken;
+  // 构造函数
+  DynamicState({
+    this.loadState = LoadState.none,
+    this.count = 0,
+    required this.isDisposed,
+    required this.cancelToken,
+  });
+
+  DynamicState copyWith({
+    LoadState? loadState,
+    int? count,
+    bool? isDisposed,
+    CancelToken? cancelToken,
+  }) {
     return DynamicState(
       loadState: loadState ?? this.loadState,
       count: count ?? this.count,
+      isDisposed: isDisposed ?? this.isDisposed,
+      cancelToken: cancelToken ?? this.cancelToken,
     );
   }
 }

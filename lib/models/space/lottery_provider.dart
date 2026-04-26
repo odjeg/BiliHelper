@@ -17,16 +17,16 @@ part 'lottery_provider.g.dart';
 class Lottery extends _$Lottery {
   @override
   LotteryState build() {
+    CancelToken cancelToken = CancelToken();
+    bool isDisposed = false;
     ref.onDispose(() {
-      _isDisposed = true;
-      _cancelToken.cancel();
+      isDisposed = true;
+      cancelToken.cancel();
     });
-    return LotteryState();
+    return LotteryState(isDisposed: isDisposed, cancelToken: cancelToken);
   }
 
   final LotteryDataSource lotteryDataSource = LotteryDataSource();
-  CancelToken _cancelToken = CancelToken();
-  bool _isDisposed = false;
   static const List<String> commentList = [
     "希望好运眷顾我✨",
     "浅浅蹲一波中奖(๑•̀ㅂ•́)و✧",
@@ -98,13 +98,13 @@ class Lottery extends _$Lottery {
       opusIdSet.add(opusId);
     }
     UserModel().lotteryItems = opusIdSet
-        .map((e) => LotteryItem(business_id: e))
+        .map((e) => LotteryItem(businessId: e))
         .toList();
     lotteryDataSource.notifyListeners();
   }
 
   Future<void> _getLotteryInfo() async {
-    if (_isDisposed) return;
+    if (state.isDisposed) return;
 
     updateLoadStatus(LoadState.loading);
     try {
@@ -113,12 +113,13 @@ class Lottery extends _$Lottery {
           'lottery csrf null';
 
       for (var item in UserModel().lotteryItems) {
-        if (_isDisposed) return;
+        if (state.isDisposed) return;
         var pageDetailResponse = await BiliXDioService.get(
           '/polymer/web-dynamic/v1/detail',
-          queryParameters: {'id': item.business_id},
-          cancelToken: _cancelToken,
+          queryParameters: {'id': item.businessId},
+          cancelToken: state.cancelToken,
         );
+        if (pageDetailResponse.data == null) return;
         if (pageDetailResponse.data['code'] == 0) {
           if (pageDetailResponse
                       .data['data']['item']['modules']['module_dynamic']['additional'] ==
@@ -128,7 +129,7 @@ class Lottery extends _$Lottery {
                   'ADDITIONAL_TYPE_RESERVE') {
             //官方抽奖和普通抽奖additional为空
 
-            item.comment_id_str = pageDetailResponse
+            item.commentIdStr = pageDetailResponse
                 .data['data']['item']['basic']['comment_id_str'];
             item.mid = pageDetailResponse
                 .data['data']['item']['modules']['module_author']['mid'];
@@ -141,7 +142,7 @@ class Lottery extends _$Lottery {
 
             item.isForward =
                 UserModel().dynamicItems.any(
-                  (element) => element.orig_id_str == item.business_id,
+                  (element) => element.origIdStr == item.businessId,
                 )
                 ? '已转发'
                 : '未转发';
@@ -149,21 +150,22 @@ class Lottery extends _$Lottery {
             var lotteryDetailResponse = await BiliXDioService.get(
               'https://api.vc.bilibili.com/lottery_svr/v1/lottery_svr/lottery_notice',
               queryParameters: {
-                'business_id': item.business_id,
+                'business_id': item.businessId,
                 'business_type': 1,
                 'csrf': csrf,
                 'web_location': '333.1330',
                 'x-bili-device-req-json':
                     '{"platform":"web","device":"pc","spmid":"333.1330"}',
               },
-              cancelToken: _cancelToken,
+              cancelToken: state.cancelToken,
             );
+            if (lotteryDetailResponse.data == null) return;
             if (lotteryDetailResponse.data['code'] == 0) {
               //code为0，说明是官方抽奖
               item.lotteryType = '互动抽奖';
               item.followed =
                   lotteryDetailResponse.data['data']['followed'] ?? false;
-              item.lottery_time =
+              item.lotteryTime =
                   lotteryDetailResponse.data['data']['lottery_time'];
             } else {
               item.lotteryType = '转发抽奖';
@@ -204,11 +206,12 @@ class Lottery extends _$Lottery {
                 'x-bili-device-req-json':
                     '{"platform":"web","device":"pc","spmid":"333.1330"}',
               },
-              cancelToken: _cancelToken,
+              cancelToken: state.cancelToken,
             );
+            if (lotteryDetailResponse.data == null) return;
             item.followed =
                 lotteryDetailResponse.data['data']['followed'] ?? false;
-            item.lottery_time =
+            item.lotteryTime =
                 lotteryDetailResponse.data['data']['lottery_time'];
           }
           lotteryDataSource.notifyListeners();
@@ -218,38 +221,37 @@ class Lottery extends _$Lottery {
     } on DioException catch (e) {
       if (e.type == DioExceptionType.cancel) return;
 
-      if (!_isDisposed) {
+      if (!state.isDisposed) {
         log('抽奖信息请求异常: $e');
         updateLoadStatus(LoadState.error);
       }
     } catch (e) {
-      if (!_isDisposed) {
+      if (!state.isDisposed) {
         log('获取抽奖信息失败: $e');
-        updateLoadStatus(LoadState.error);
+        //updateLoadStatus(LoadState.error);
       }
     }
   }
 
   Future<void> startLottery() async {
-    if (_isDisposed) return;
+    if (state.isDisposed) return;
 
     log('开始抽奖...');
     UserModel().lotteryItems.clear();
     updateLoadStatus(LoadState.loading, count: 0);
-    _cancelToken = CancelToken();
 
     await _getClipboardText();
     await _getLotteryInfo();
 
     try {
       for (var item in UserModel().lotteryItems) {
-        if (_isDisposed) return;
+        if (state.isDisposed) return;
 
         updateLoadStatus(LoadState.loading, count: state.count + 1);
         bool flag = false;
         if (item.lotteryType == '互动抽奖') {
           if (DateTime.fromMillisecondsSinceEpoch(
-                item.lottery_time! * 1000,
+                item.lotteryTime! * 1000,
               ).compareTo(DateTime.now()) <
               0) {
             item.isForward = '已截止';
@@ -261,7 +263,7 @@ class Lottery extends _$Lottery {
             var response = await BiliXDioService.userModify(
               fid: item.mid!,
               act: 1,
-              cancelToken: _cancelToken,
+              cancelToken: state.cancelToken,
             );
             if (response.statusCode == 200 && response.data['code'] == 0) {
               item.followed = true;
@@ -275,10 +277,10 @@ class Lottery extends _$Lottery {
               data: {
                 'type': 1,
                 'scene': 4,
-                'dyn_id_str': item.business_id,
+                'dyn_id_str': item.businessId,
                 'raw_text': '互动抽奖',
               },
-              cancelToken: _cancelToken,
+              cancelToken: state.cancelToken,
             );
             if (response.statusCode == 200 && response.data['code'] == 0) {
               item.isForward = '已转发';
@@ -290,11 +292,11 @@ class Lottery extends _$Lottery {
         } else if ((item.lotteryType == '直播预约' || item.lotteryType == '视频预约') &&
             item.isForward == '未预约') {
           flag = true;
-          log('预约抽奖: ${item.business_id} ${item.rid}');
+          log('预约抽奖: ${item.businessId} ${item.rid}');
           var response = await BiliXDioService.reserveLottery(
-            dynamic_id_str: item.business_id,
-            reserve_id: item.rid!,
-            cancelToken: _cancelToken,
+            dynamicIdStr: item.businessId,
+            reserveId: item.rid!,
+            cancelToken: state.cancelToken,
           );
           if (response.statusCode == 200 && response.data['code'] == 0) {
             item.isForward = '已预约';
@@ -307,7 +309,7 @@ class Lottery extends _$Lottery {
           //需要转发点赞评论
           flag = true;
           var thumbResponse = await BiliXDioService.userThumb(
-            dynamic_id_str: item.business_id,
+            dynamic_id_str: item.businessId,
             up: 1,
           );
           if (thumbResponse.statusCode == 200 &&
@@ -318,10 +320,10 @@ class Lottery extends _$Lottery {
             log('点赞失败: ${thumbResponse.data}');
           }
           var replyResponse = await BiliXDioService.userReplyAdd(
-            oid: item.comment_id_str!,
+            oid: item.commentIdStr!,
             message: commentList[math.Random().nextInt(commentList.length)],
             type: 11,
-            cancelToken: _cancelToken,
+            cancelToken: state.cancelToken,
           );
           if (replyResponse.statusCode == 200 &&
               replyResponse.data['code'] == 0) {
@@ -335,10 +337,10 @@ class Lottery extends _$Lottery {
               data: {
                 'type': 1,
                 'scene': 4,
-                'dyn_id_str': item.business_id,
+                'dyn_id_str': item.businessId,
                 'raw_text': '转发抽奖',
               },
-              cancelToken: _cancelToken,
+              cancelToken: state.cancelToken,
             );
             if (respostResponse.statusCode == 200 &&
                 respostResponse.data['code'] == 0) {
@@ -356,35 +358,49 @@ class Lottery extends _$Lottery {
           await Future.delayed(const Duration(seconds: 10));
         }
       }
+      updateLoadStatus(LoadState.done);
     } on DioException catch (e) {
       // 取消请求 → 安静退出
       if (e.type == DioExceptionType.cancel) return;
 
-      if (!_isDisposed) {
+      if (!state.isDisposed) {
         log('抽奖列表请求异常: $e');
         updateLoadStatus(LoadState.error);
       }
     } catch (e) {
-      if (!_isDisposed) {
+      if (!state.isDisposed) {
         log('初始化抽奖列表失败: $e');
-        updateLoadStatus(LoadState.error);
+        //updateLoadStatus(LoadState.error);
       }
     }
-
-    updateLoadStatus(LoadState.done);
   }
 }
 
 class LotteryState {
   final LoadState loadState;
   int count;
-  // 构造函数
-  LotteryState({this.loadState = LoadState.none, this.count = 0});
 
-  LotteryState copyWith({LoadState? loadState, int? count}) {
+  final bool isDisposed;
+  final CancelToken cancelToken;
+  // 构造函数
+  LotteryState({
+    this.loadState = LoadState.none,
+    this.count = 0,
+    required this.isDisposed,
+    required this.cancelToken,
+  });
+
+  LotteryState copyWith({
+    LoadState? loadState,
+    int? count,
+    bool? isDisposed,
+    CancelToken? cancelToken,
+  }) {
     return LotteryState(
       loadState: loadState ?? this.loadState,
       count: count ?? this.count,
+      isDisposed: isDisposed ?? this.isDisposed,
+      cancelToken: cancelToken ?? this.cancelToken,
     );
   }
 }
