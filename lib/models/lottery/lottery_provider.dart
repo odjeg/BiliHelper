@@ -8,6 +8,7 @@ import 'package:bilihelper/models/lottery/dynamic_state.dart';
 import 'package:bilihelper/models/lottery/lottery_state.dart';
 import 'package:bilihelper/models/lottery/providers.dart/lottery_reply_provider.dart';
 import 'package:bilihelper/models/lottery/reply_item.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -18,6 +19,11 @@ part 'lottery_provider.g.dart';
 class Lottery extends _$Lottery {
   @override
   LotteryState build() {
+    _cancelToken = CancelToken();
+    ref.onDispose(() {
+      _cancelToken?.cancel();
+      log('LotteryProvider已被销毁，取消请求');
+    });
     // 初始状态
     return LotteryState(
       loadState: LoadState.none,
@@ -39,6 +45,7 @@ class Lottery extends _$Lottery {
     );
   }
 
+  CancelToken? _cancelToken;
   AnimationController? animationController;
   Animation<double>? gradientAnimation;
 
@@ -135,19 +142,24 @@ class Lottery extends _$Lottery {
   }
 
   Future<void> startDarwLottery() async {
+    final cancelToken = _cancelToken!;
     state = state.copyWith(
       loadState: LoadState.loading,
       dynamicState: null,
       luckUserList: [],
     );
     ref.read(lotteryReplyProvider.notifier).clear(); // 同步清空评论列表
-    var dynamicState = await _initDynamicDetail();
-    var replyItems = await _initReplyList(dynamicState);
-    await _initLuckUserList(replyItems);
+    var dynamicState = await _initDynamicDetail(cancelToken);
+    if (dynamicState == null) return;
+    var replyItems = await _initReplyList(dynamicState, cancelToken);
+    if (replyItems.isEmpty) return;
+    await _initLuckUserList(replyItems, cancelToken);
     state = state.copyWith(loadState: LoadState.none);
   }
 
-  Future<DynamicState> _initDynamicDetail() async {
+  Future<DynamicState?> _initDynamicDetail(CancelToken cancelToken) async {
+    if (cancelToken.isCancelled) return null;
+
     state = state.copyWith(dynamicState: null, luckUserList: null);
     late DynamicState dynamicState;
     if (state.link.contains('opus/')) {
@@ -158,6 +170,7 @@ class Lottery extends _$Lottery {
       var response = await BiliXDioService.get(
         '/polymer/web-dynamic/v1/detail',
         queryParameters: {'id': dynamicId},
+        cancelToken: cancelToken,
       );
       if (response.statusCode == 200) {
         dynamicState = DynamicState(
@@ -188,6 +201,7 @@ class Lottery extends _$Lottery {
       var response = await BiliXDioService.get(
         '/web-interface/view',
         queryParameters: {'bvid': videoId},
+        cancelToken: cancelToken,
       );
 
       if (response.statusCode == 200) {
@@ -218,7 +232,12 @@ class Lottery extends _$Lottery {
   }
 
   // 初始化抽奖链接评论列表
-  Future<List<ReplyState>> _initReplyList(DynamicState dynamicState) async {
+  Future<List<ReplyState>> _initReplyList(
+    DynamicState dynamicState,
+    CancelToken cancelToken,
+  ) async {
+    if (cancelToken.isCancelled) return [];
+
     List<ReplyState> replyItems = [];
     bool is_end = false;
     String pagination_str = '{"offset":""}';
@@ -241,6 +260,7 @@ class Lottery extends _$Lottery {
               'web_location': 1315875,
             },
           ),
+          cancelToken: cancelToken,
         );
         is_end = response.data['data']['cursor']['is_end'];
         pagination_str =
@@ -266,7 +286,11 @@ class Lottery extends _$Lottery {
   }
 
   // 初始化抽奖链接评论列表
-  Future<void> _initLuckUserList(List<ReplyState> replyItems) async {
+  Future<void> _initLuckUserList(
+    List<ReplyState> replyItems,
+    CancelToken cancelToken,
+  ) async {
+    if (cancelToken.isCancelled) return;
     if (replyItems.isEmpty) {
       return;
     }
