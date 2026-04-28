@@ -22,6 +22,7 @@ class Lottery extends _$Lottery {
     _cancelToken = CancelToken();
     ref.onDispose(() {
       _cancelToken?.cancel();
+      animationController = null;
       log('LotteryProvider已被销毁，取消请求');
     });
     // 初始状态
@@ -50,17 +51,20 @@ class Lottery extends _$Lottery {
   Animation<double>? gradientAnimation;
 
   void initAnimation(TickerProvider vsync, Duration duration) {
-    animationController = AnimationController(vsync: vsync, duration: duration)
-      ..repeat()
-      ..stop(); // 默认不播放动画，等抽奖开始时再播放
+    if (animationController == null) {
+      animationController =
+          AnimationController(vsync: vsync, duration: duration)
+            ..repeat()
+            ..stop(); // 默认不播放动画，等抽奖开始时再播放
 
-    // 生成0~1的动画值，驱动渐变平移
-    gradientAnimation = Tween<double>(begin: 300, end: 1200.0).animate(
-      CurvedAnimation(
-        parent: animationController!,
-        curve: Curves.linear, // 匀速滚动，无加速减速
-      ),
-    );
+      // 生成0~1的动画值，驱动渐变平移
+      gradientAnimation = Tween<double>(begin: 300, end: 1200.0).animate(
+        CurvedAnimation(
+          parent: animationController!,
+          curve: Curves.linear, // 匀速滚动，无加速减速
+        ),
+      );
+    }
   }
 
   void updateLoadState(LoadState loadState) {
