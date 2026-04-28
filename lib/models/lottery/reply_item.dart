@@ -6,7 +6,7 @@ class ReplyState {
   int ctime;
   String uname;
   String avatar;
-  int current_level;
+  int currentLevel;
   String message;
   String? location;
   ReplyState(
@@ -17,7 +17,7 @@ class ReplyState {
     this.ctime,
     this.uname,
     this.avatar,
-    this.current_level,
+    this.currentLevel,
     this.message,
     this.location,
   );

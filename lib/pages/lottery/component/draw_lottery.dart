@@ -486,7 +486,7 @@ class _DrawLotteryState extends ConsumerState<DrawLottery>
               child: Wrap(
                 children: [
                   SelectableText(
-                    '${item.uname}(${item.mid})[Lv${item.current_level}]{${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(item.ctime * 1000))}}-',
+                    '${item.uname}(${item.mid})[Lv${item.currentLevel}]{${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(item.ctime * 1000))}}-',
                   ),
                   TextHighlight(
                     text: item.message,
@@ -536,7 +536,7 @@ class _DrawLotteryState extends ConsumerState<DrawLottery>
                   child: Wrap(
                     children: [
                       SelectableText(
-                        '${item.uname}(${item.mid})[Lv${item.current_level}]{${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(item.ctime * 1000))}}-',
+                        '${item.uname}(${item.mid})[Lv${item.currentLevel}]{${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(item.ctime * 1000))}}-',
                       ),
                       TextHighlight(
                         text: item.message,

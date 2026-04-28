@@ -357,7 +357,7 @@ class Lottery extends _$Lottery {
           flag = true;
           try {
             var thumbResponse = await BiliXDioService.userThumb(
-              dynamic_id_str: item.businessId,
+              dynamicIdStr: item.businessId,
               up: 1,
             );
             if (thumbResponse.statusCode == 200 &&

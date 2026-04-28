@@ -161,7 +161,7 @@ class BiliXDioService {
 
   // 点赞/取消点赞
   static Future<Response<dynamic>> userThumb({
-    required String dynamic_id_str,
+    required String dynamicIdStr,
     required int up, //1点赞，2取消点赞
   }) async {
     var response = await _dio.post(
@@ -171,7 +171,7 @@ class BiliXDioService {
       },
       //{"dyn_id_str":"1169139614670127109","up":1,"spmid":"333.1369.0.0","from_spmid":["333.1387.0.0","333.1369.0.0"]}
       data: {
-        'dyn_id_str': dynamic_id_str,
+        'dyn_id_str': dynamicIdStr,
         'up': up,
         'spmid': '333.1369.0.0',
         'from_spmid': ['333.1387.0.0', '333.1369.0.0'],
@@ -182,7 +182,7 @@ class BiliXDioService {
           'content-type': 'application/json',
           'origin': 'https://space.bilibili.com',
           'referer':
-              'https://www.bilibili.com/opus/$dynamic_id_str?spm_id_from=333.1387.0.0&spm_id_from=333.1369.0.0',
+              'https://www.bilibili.com/opus/$dynamicIdStr?spm_id_from=333.1387.0.0&spm_id_from=333.1369.0.0',
         },
       ),
     );
@@ -240,8 +240,8 @@ class BiliXDioService {
 
   //删除动态
   static Future<Response<dynamic>> removeDynamic({
-    required String dynamic_id_str,
-    required int dyn_type, //1删除普通动态，2删除转发动态，3删除点赞动态，44删除转发动态
+    required String dynamicIdStr,
+    required int dynType, //1删除普通动态，2删除转发动态，3删除点赞动态，44删除转发动态
     CancelToken? cancelToken,
   }) async {
     String? mid = await SecureStorageService.getToken('DedeUserID');
@@ -252,9 +252,9 @@ class BiliXDioService {
         'csrf': await SecureStorageService.getToken('bili_jct'),
       },
       data: {
-        'dyn_id_str': dynamic_id_str,
-        'dyn_type': dyn_type,
-        'rid_str': dynamic_id_str,
+        'dyn_id_str': dynamicIdStr,
+        'dyn_type': dynType,
+        'rid_str': dynamicIdStr,
       },
       options: Options(
         headers: {

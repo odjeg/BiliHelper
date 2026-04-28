@@ -135,8 +135,8 @@ class Dynamic extends _$Dynamic {
       // 请求接口
       try {
         var _ = await BiliXDioService.removeDynamic(
-          dynamic_id_str: dynamic_id_str,
-          dyn_type: 1,
+          dynamicIdStr: dynamic_id_str,
+          dynType: 1,
         );
       } catch (e) {
         log('删除动态失败: $e', error: e);

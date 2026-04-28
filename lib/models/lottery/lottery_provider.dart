@@ -124,7 +124,7 @@ class Lottery extends _$Lottery {
     final (_, count) = newList[index];
     newList[index] = (name, count);
     state = state.copyWith(prizeItems: newList);
-    log('updatePrizeName:${index} ${state.prizeItems[index]}');
+    log('updatePrizeName:$index ${state.prizeItems[index]}');
   }
 
   // 单独更新奖项数量
@@ -134,7 +134,7 @@ class Lottery extends _$Lottery {
     final (name, _) = newList[index];
     newList[index] = (name, count);
     state = state.copyWith(prizeItems: newList);
-    log('updatePrizeCount:${index} ${state.prizeItems[index]}');
+    log('updatePrizeCount:$index ${state.prizeItems[index]}');
   }
 
   void clearluckUserList() {
@@ -239,8 +239,8 @@ class Lottery extends _$Lottery {
     if (cancelToken.isCancelled) return [];
 
     List<ReplyState> replyItems = [];
-    bool is_end = false;
-    String pagination_str = '{"offset":""}';
+    bool isEnd = false;
+    String paginationStr = '{"offset":""}';
 
     Set<String> rpidSet = {};
 
@@ -255,15 +255,15 @@ class Lottery extends _$Lottery {
               'oid': dynamicState.oid,
               'type': dynamicState.type,
               'mode': 2,
-              'pagination_str': pagination_str,
+              'pagination_str': paginationStr,
               'plat': 1,
               'web_location': 1315875,
             },
           ),
           cancelToken: cancelToken,
         );
-        is_end = response.data['data']['cursor']['is_end'];
-        pagination_str =
+        isEnd = response.data['data']['cursor']['is_end'];
+        paginationStr =
             '{"offset":"${response.data['data']['cursor']['pagination_reply']['next_offset']}"}';
         for (var item in response.data['data']['replies']) {
           replyItems.add(ReplyState.fromJson(item));
@@ -276,7 +276,7 @@ class Lottery extends _$Lottery {
         await Future.delayed(Duration(milliseconds: 1500));
 
         //log('已加载评论列表: ${replyItems.length} 条, rpid去重后 ${rpidSet.length} 条');
-      } while (!is_end);
+      } while (!isEnd);
     } catch (e) {
       log('初始化抽奖链接评论列表失败');
       return [];
@@ -303,23 +303,23 @@ class Lottery extends _$Lottery {
     log(state.count.toString());
     log(state.isMultiLotteryFilter.toString());
     if (state.isMultiLotteryFilter) {
-      state.prizeItems.forEach((prizeItem) {
+      for (var prizeItem in state.prizeItems) {
         log('奖项: ${prizeItem.$1} 数量: ${prizeItem.$2}');
-      });
+      }
     }
     int count = 0;
     //获取抽取人数
     if (state.isMultiLotteryFilter) {
-      state.prizeItems.forEach((prizeItem) {
+      for (var prizeItem in state.prizeItems) {
         count += prizeItem.$2;
-      });
+      }
     } else {
       count = state.count;
     }
 
     //先筛选用户Lv等级和关键词
     for (var item in replyItems) {
-      bool lvMatch = state.lvFilter['Lv${item.current_level}']!;
+      bool lvMatch = state.lvFilter['Lv${item.currentLevel}']!;
       bool keyWorldMatch = item.message.contains(state.keyWorldFilter);
       if (lvMatch && keyWorldMatch) {
         filterUserReplyItems.add(item);

@@ -17,7 +17,6 @@ class _LinkInputSectionState extends ConsumerState<LinkInputSection> {
   final _linkController = TextEditingController();
   @override
   void initState() {
-    // TODO: implement initState
     log('LinkInputSection initState');
     _linkController.text = ref.read(lotteryProvider).link;
     super.initState();
