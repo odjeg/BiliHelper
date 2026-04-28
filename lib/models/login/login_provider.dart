@@ -12,6 +12,9 @@ final loginProvider = NotifierProvider.autoDispose<LoginNotifier, LoginState>(
 class LoginNotifier extends Notifier<LoginState> {
   @override
   LoginState build() {
+    ref.onDispose(() {
+      log('LoginProvider 被销毁，取消未完成的请求');
+    });
     return LoginState(
       url: '',
       qrcodeKey: '',

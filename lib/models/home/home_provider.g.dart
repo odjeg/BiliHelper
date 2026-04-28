@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'following_provider.dart';
+part of 'home_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,51 +9,50 @@ part of 'following_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(Following)
-final followingProvider = FollowingProvider._();
+@ProviderFor(Home)
+final homeProvider = HomeProvider._();
 
-final class FollowingProvider
-    extends $NotifierProvider<Following, FollowingState> {
-  FollowingProvider._()
+final class HomeProvider extends $NotifierProvider<Home, HomeState> {
+  HomeProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'followingProvider',
+        name: r'homeProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$followingHash();
+  String debugGetCreateSourceHash() => _$homeHash();
 
   @$internal
   @override
-  Following create() => Following();
+  Home create() => Home();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(FollowingState value) {
+  Override overrideWithValue(HomeState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<FollowingState>(value),
+      providerOverride: $SyncValueProvider<HomeState>(value),
     );
   }
 }
 
-String _$followingHash() => r'0723da39acb00e4c16c89c98a25f4b04d49d22b6';
+String _$homeHash() => r'15776ebfc5b1292851738869d8deeab231f73429';
 
-abstract class _$Following extends $Notifier<FollowingState> {
-  FollowingState build();
+abstract class _$Home extends $Notifier<HomeState> {
+  HomeState build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<FollowingState, FollowingState>;
+    final ref = this.ref as $Ref<HomeState, HomeState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<FollowingState, FollowingState>,
-              FollowingState,
+              AnyNotifier<HomeState, HomeState>,
+              HomeState,
               Object?,
               Object?
             >;

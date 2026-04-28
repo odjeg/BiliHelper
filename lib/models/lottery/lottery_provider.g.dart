@@ -40,7 +40,7 @@ final class LotteryProvider extends $NotifierProvider<Lottery, LotteryState> {
   }
 }
 
-String _$lotteryHash() => r'a3bdb2d2dfd303c98622d338232f729f5873889b';
+String _$lotteryHash() => r'46ddef32bb581e3a36295358559909b4803360e9';
 
 abstract class _$Lottery extends $Notifier<LotteryState> {
   LotteryState build();

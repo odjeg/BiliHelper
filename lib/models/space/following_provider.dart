@@ -17,6 +17,7 @@ class Following extends _$Following {
     // ✅ 生命周期由 build 管理，invalidate 就会重置
     _cancelToken = CancelToken();
     ref.onDispose(() {
+      log('FollowingProvider 被销毁，取消未完成的请求');
       _cancelToken?.cancel();
     });
     return FollowingState();

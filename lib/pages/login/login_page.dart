@@ -1,3 +1,4 @@
+import 'package:bilihelper/models/home/home_provider.dart';
 import 'package:bilihelper/models/login/login_provider.dart';
 import 'package:bilihelper/models/login/login_state.dart';
 import 'package:bilihelper/pages/home/home_page.dart';
@@ -18,13 +19,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void initState() {
     super.initState();
     ref.read(loginProvider.notifier).initQrCode();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    ref.listen<LoginState>(loginProvider, (previous, current) {
-      // 🔥 登录成功 → 跳主页，并且销毁登录页
-      if (current.isLoginSuccess) {
+    // ✅✅✅ 只注册一次！永远不会重复！
+    ref.listenManual<LoginState>(loginProvider, (previous, current) {
+      if (!previous!.isLoginSuccess && current.isLoginSuccess) {
+        ref.read(homeProvider.notifier).initProfile();
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const HomePage()),
@@ -32,6 +30,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         );
       }
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(loginProvider);
     return Scaffold(
       body: Center(

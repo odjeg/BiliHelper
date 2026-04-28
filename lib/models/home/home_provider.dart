@@ -1,16 +1,18 @@
 import 'dart:developer';
 
 import 'package:bilihelper/common/services/bili_x_dio_service.dart';
+import 'package:bilihelper/models/home/home_state.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'home_provider.g.dart';
 
-final homeProvider = NotifierProvider.autoDispose<HomeNotifier, HomeState>(
-  HomeNotifier.new,
-);
-
-class HomeNotifier extends Notifier<HomeState> {
+@Riverpod(keepAlive: true)
+class Home extends _$Home {
   @override
   HomeState build() {
+    ref.onDispose(() {
+      log('HomeProvider 被销毁');
+    });
     return HomeState();
   }
 
@@ -18,15 +20,9 @@ class HomeNotifier extends Notifier<HomeState> {
     state = state.copyWith(mid: mid, uname: uname, imageUrl: imageUrl);
   }
 
-  // 🔥 加一个锁，保证只执行一次（核心修复）
-
-  // bool _hasInit = false;
-
   Future<void> initProfile() async {
-    //if (_hasInit) return;
-    //_hasInit = true;
     log('获取用户信息...${DateTime.now()}');
-    //log('调用栈:', stackTrace: StackTrace.current);
+
     Response<dynamic> response;
     try {
       response = await BiliXDioService.get(
@@ -40,30 +36,7 @@ class HomeNotifier extends Notifier<HomeState> {
       );
     } catch (e) {
       log('获取用户信息失败: $e', error: e); // 失败后解锁，允许重试
-      //_hasInit = false;
       return;
     }
-  }
-
-  void logout() {
-    state = state.copyWith(mid: null, uname: null, imageUrl: null);
-
-    //_hasInit = false; // 退出登录重置锁
-  }
-}
-
-class HomeState {
-  final String? mid;
-  final String? uname;
-  final String? imageUrl;
-
-  HomeState({this.mid, this.uname, this.imageUrl});
-
-  HomeState copyWith({String? mid, String? uname, String? imageUrl}) {
-    return HomeState(
-      mid: mid ?? this.mid,
-      uname: uname ?? this.uname,
-      imageUrl: imageUrl ?? this.imageUrl,
-    );
   }
 }

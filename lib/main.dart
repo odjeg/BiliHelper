@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Noto Sans SC'),
-      home: needLogin == true ? const LoginPage() : const HomePage(),
+      home: needLogin == true ? const LoginPage() : HomePage(needLogin: false),
     );
   }
 }

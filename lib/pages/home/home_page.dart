@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key});
+  final bool? needLogin;
+  const HomePage({super.key, this.needLogin});
 
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
@@ -16,10 +17,13 @@ class _HomePageState extends ConsumerState<HomePage> {
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
   final List<Widget> _pages = [SpacePage(), LotteryPage()];
+
   @override
   void initState() {
     super.initState();
-    ref.read(homeProvider.notifier).initProfile();
+    if (widget.needLogin == false) {
+      ref.read(homeProvider.notifier).initProfile();
+    }
   }
 
   @override
