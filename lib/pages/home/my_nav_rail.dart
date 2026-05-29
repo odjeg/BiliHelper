@@ -49,6 +49,11 @@ class _MyNavRailState extends ConsumerState<MyNavRail> {
             selectedIcon: Icon(Icons.card_giftcard_rounded),
             label: Text('抽奖'),
           ),
+          NavigationRailDestination(
+            icon: Icon(Icons.adb_outlined),
+            selectedIcon: Icon(Icons.adb),
+            label: Text('数据'),
+          ),
         ],
         trailing: Column(
           children: [

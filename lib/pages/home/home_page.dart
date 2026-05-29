@@ -1,4 +1,5 @@
 import 'package:bilihelper/models/home/home_provider.dart';
+import 'package:bilihelper/pages/crawler/crawler_page.dart';
 import 'package:bilihelper/pages/home/my_nav_rail.dart';
 import 'package:bilihelper/pages/lottery/lottery_page.dart';
 import 'package:bilihelper/pages/space/space_page.dart';
@@ -16,7 +17,7 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
-  final List<Widget> _pages = [SpacePage(), LotteryPage()];
+  final List<Widget> _pages = [SpacePage(), LotteryPage(), ClawlerPage()];
 
   @override
   void initState() {

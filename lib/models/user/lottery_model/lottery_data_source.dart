@@ -13,8 +13,8 @@ class LotteryDataSource extends DataGridSource {
               columnName: 'business_id',
               value: e.businessId,
             ),
-            DataGridCell<int?>(columnName: 'mid', value: e.mid),
-            DataGridCell<String?>(columnName: 'name', value: e.name),
+            DataGridCell<int>(columnName: 'mid', value: e.mid ?? 0),
+            DataGridCell<String>(columnName: 'name', value: e.name ?? ''),
             DataGridCell<String>(
               columnName: 'followed',
               value: e.followed == true ? '是' : '否',
@@ -29,10 +29,13 @@ class LotteryDataSource extends DataGridSource {
                       ).toLocal(),
                     ),
             ),
-            DataGridCell<String>(columnName: 'isForward', value: e.isForward),
+            DataGridCell<String>(
+              columnName: 'isForward',
+              value: e.isForward ?? '',
+            ),
             DataGridCell<String>(
               columnName: 'lotteryType',
-              value: e.lotteryType,
+              value: e.lotteryType ?? '',
             ),
           ],
         ),
@@ -40,7 +43,7 @@ class LotteryDataSource extends DataGridSource {
       .toList();
 
   @override
-  DataGridRowAdapter? buildRow(DataGridRow row) {
+  DataGridRowAdapter buildRow(DataGridRow row) {
     return DataGridRowAdapter(
       cells: row.getCells().map<Widget>((dataGridCell) {
         return Text(

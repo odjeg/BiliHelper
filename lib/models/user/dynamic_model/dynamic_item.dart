@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 class DynamicItem {
   final String idStr; // 个人转发动态id
   final String pubTs; // 动态发布时间戳
@@ -18,6 +20,17 @@ class DynamicItem {
     required this.dynamicText,
   });
   factory DynamicItem.fromJson(Map<String, dynamic> json) {
+    if (json['orig']['id_str'] == "0") {
+      return DynamicItem(
+        idStr: json['id_str'],
+        pubTs: json['modules']['module_author']['pub_ts'],
+        origIdStr: "",
+        origMid: 0,
+        origName: "",
+        following: false,
+        dynamicText: "",
+      );
+    }
     return DynamicItem(
       idStr: json['id_str'],
       pubTs: json['modules']['module_author']['pub_ts'],

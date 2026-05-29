@@ -279,6 +279,7 @@ class Lottery extends _$Lottery {
               ).compareTo(DateTime.now()) <
               0) {
             item.isForward = '已截止';
+            lotteryDataSource.notifyListeners();
             continue;
           }
           //需要关注且转发
