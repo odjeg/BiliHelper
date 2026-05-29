@@ -474,30 +474,76 @@ class _DrawLotteryState extends ConsumerState<DrawLottery>
       return SizedBox.shrink();
     }
     return Column(
+      spacing: 20,
       children: luckUserList
           .map(
             (item) => Container(
-              margin: EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              padding: EdgeInsets.all(10),
-              child: Wrap(
+              margin: EdgeInsets.symmetric(horizontal: 30),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SelectableText(
-                    '${item.uname}(${item.mid})[Lv${item.currentLevel}]{${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(item.ctime * 1000))}}-',
+                  CircleAvatar(
+                    backgroundImage: item.avatar.isNotEmpty
+                        ? NetworkImage(item.avatar)
+                        : null,
+                    radius: 20,
                   ),
-                  TextHighlight(
-                    text: item.message,
-                    words: {
-                      ref.read(lotteryProvider).keyWorldFilter: HighlightedWord(
-                        textStyle: TextStyle(
-                          color: Colors.pink[300],
-                          fontWeight: FontWeight.bold,
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SelectableText.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: item.uname,
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              TextSpan(
+                                text: '(${item.mid})',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Lv${item.currentLevel}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    },
+                        TextHighlight(
+                          text: item.message,
+                          words: {
+                            ref
+                                .read(lotteryProvider)
+                                .keyWorldFilter: HighlightedWord(
+                              textStyle: TextStyle(
+                                color: Colors.pink[300],
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          },
+                        ),
+
+                        Text(
+                          DateFormat('yyyy-MM-dd HH:mm:ss').format(
+                            DateTime.fromMillisecondsSinceEpoch(
+                              item.ctime * 1000,
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -522,34 +568,78 @@ class _DrawLotteryState extends ConsumerState<DrawLottery>
       children: [
         for (var (name, count) in prizeItems)
           Column(
+            spacing: 20,
             children: [
               Text('$name - $count人'),
               ...luckUserList.skip(index).take(count).map((item) {
                 index++;
                 return Container(
-                  margin: EdgeInsets.only(bottom: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey[300]!),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  padding: EdgeInsets.all(10),
-                  child: Wrap(
+                  margin: EdgeInsets.symmetric(horizontal: 30),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SelectableText(
-                        '${item.uname}(${item.mid})[Lv${item.currentLevel}]{${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(item.ctime * 1000))}}-',
+                      CircleAvatar(
+                        backgroundImage: item.avatar.isNotEmpty
+                            ? NetworkImage(item.avatar)
+                            : null,
+                        radius: 20,
                       ),
-                      TextHighlight(
-                        text: item.message,
-                        words: {
-                          ref
-                              .read(lotteryProvider)
-                              .keyWorldFilter: HighlightedWord(
-                            textStyle: TextStyle(
-                              color: Colors.pink[300],
-                              fontWeight: FontWeight.bold,
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SelectableText.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: item.uname,
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  TextSpan(
+                                    text: '(${item.mid})',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Lv${item.currentLevel}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        },
+                            TextHighlight(
+                              text: item.message,
+                              words: {
+                                ref
+                                    .read(lotteryProvider)
+                                    .keyWorldFilter: HighlightedWord(
+                                  textStyle: TextStyle(
+                                    color: Colors.pink[300],
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              },
+                            ),
+
+                            Text(
+                              DateFormat('yyyy-MM-dd HH:mm:ss').format(
+                                DateTime.fromMillisecondsSinceEpoch(
+                                  item.ctime * 1000,
+                                ),
+                              ),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
