@@ -47,6 +47,8 @@ dependencies:
   crypto: ^3.0.7
   highlight_text: ^1.8.0         # 文字高亮显示
   window_manager: ^0.5.1     # 窗口管理库
+  dio_cookie_manager: ^3.5.0 # Cookie管理器
+  cookie_jar: ^4.0.9 # CookieJar库
 
 
 dev_dependencies:

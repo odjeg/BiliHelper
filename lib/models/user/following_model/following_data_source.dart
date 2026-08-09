@@ -19,7 +19,10 @@ class FollowingDataSource extends DataGridSource {
                 columnName: 'mtime',
                 value: item.mtime,
               ), //时间戳转日期10位
-              DataGridCell<int>(columnName: 'special', value: item.special),
+              DataGridCell<String>(
+                columnName: 'special',
+                value: item.special == 0 ? "否" : "是",
+              ),
             ],
           ),
         )
@@ -34,7 +37,7 @@ class FollowingDataSource extends DataGridSource {
                   .getCells()
                   .firstWhere((element) => element.columnName == 'special')
                   .value ==
-              1
+              "是"
           ? Colors.green[400]
           : null,
       cells: row.getCells().map<Widget>((dataGridCell) {

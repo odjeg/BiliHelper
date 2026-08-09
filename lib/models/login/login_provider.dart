@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'package:bilihelper/common/services/bili_x_dio_service.dart';
 import 'package:bilihelper/common/services/secure_storage_service.dart';
 import 'package:bilihelper/models/login/login_state.dart';
-import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:developer';
 
@@ -25,9 +26,6 @@ class LoginNotifier extends Notifier<LoginState> {
   }
 
   Timer? _pollingTimer;
-  static final Dio dio = Dio()
-    ..options.connectTimeout = Duration(seconds: 5)
-    ..options.receiveTimeout = Duration(seconds: 5);
 
   Future<void> initQrCode() async {
     await _fetchQrData();
@@ -36,10 +34,12 @@ class LoginNotifier extends Notifier<LoginState> {
   Future<void> _fetchQrData() async {
     log('开始获取二维码');
     try {
-      var response = await dio.get(
+      var response = await BiliXDioService.get(
         'https://passport.bilibili.com/x/passport-login/web/qrcode/generate',
       );
-      log('获取二维码响应：${response.data}');
+      debugPrint(
+        '二维码获取响应: ${response.data.runtimeType.toString()}, 内容: ${response.data}',
+      );
       if (response.data['code'] == 0) {
         // 校验接口返回成功
         state = state.copyWith(
@@ -55,7 +55,7 @@ class LoginNotifier extends Notifier<LoginState> {
         state = state.copyWith(message: '获取二维码失败：${response.data['message']}');
       }
     } catch (e) {
-      log('获取二维码失败: $e', error: e);
+      log('获取二维码异常: $e', error: e);
       state = state.copyWith(message: '网络异常，无法获取二维码');
       // 延迟重试
       _retryFetchQr();
@@ -69,7 +69,7 @@ class LoginNotifier extends Notifier<LoginState> {
     state.isRequesting = true;
 
     try {
-      var response = await dio.get(
+      var response = await BiliXDioService.get(
         'https://passport.bilibili.com/x/passport-login/web/qrcode/poll',
         queryParameters: {'qrcode_key': state.qrcodeKey},
       );
@@ -100,6 +100,7 @@ class LoginNotifier extends Notifier<LoginState> {
 
   // 处理登录成功
   Future<void> _handleLoginSuccess(String url) async {
+    log('登录成功，URL: $url');
     await SecureStorageService.saveTokenFromUrl(url);
     await SecureStorageService.getBuvid();
     await SecureStorageService.getWbi();

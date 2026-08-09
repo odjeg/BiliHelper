@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class DynamicItem {
   final String idStr; // 个人转发动态id
   final String pubTs; // 动态发布时间戳
@@ -37,7 +35,9 @@ class DynamicItem {
       origIdStr: json['orig']['id_str'],
       origMid: json['orig']['modules']['module_author']['mid'],
       origName: json['orig']['modules']['module_author']['name'],
-      following: json['orig']['modules']['module_author']['following'],
+      following:
+          json['orig']['modules']['module_author']['following'] !=
+          0, //为2 需要查询一下
       dynamicText: json['modules']['module_dynamic']['desc']['text'],
     );
   }

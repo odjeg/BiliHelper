@@ -6,11 +6,17 @@ import 'package:bilihelper/common/services/secure_storage_service.dart';
 import 'package:bilihelper/common/utils/cookie_generator.dart';
 import 'package:bilihelper/common/utils/wbi_generator.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:random_user_agents/random_user_agents.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 
 class BiliXDioService {
+  BiliXDioService._internal();
   static final Dio _dio = Dio();
   static Dio get instance => _dio;
+  static final _cookieJar = PersistCookieJar(persistSession: true);
+  static CookieJar get cookieJar => _cookieJar;
 
   // 异步初始化Dio（核心修改：异步获取Cookie和真实UA）
   static Future<void> init() async {
@@ -38,20 +44,21 @@ class BiliXDioService {
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          try {
-            response.data = json.decode(response.data as String);
-            handler.next(response);
-          } catch (e) {
-            // 构造具体的异常信息，方便排查
-            handler.reject(
-              DioException(
-                requestOptions: response.requestOptions,
-                error: '响应解析异常：$e',
-                response: response, // 携带原响应，方便排查
-                type: DioExceptionType.badResponse,
-              ),
-            );
+          final contentType = response.headers['content-type']?.first ?? '';
+          final body = response.data as String?;
+
+          final bool isJson = contentType.toLowerCase().contains(
+            'application/json',
+          );
+          final bool canParse = body != null && body.isNotEmpty && isJson;
+          if (canParse) {
+            try {
+              response.data = json.decode(body);
+            } catch (e) {
+              debugPrint("JSON解析失败 $e");
+            }
           }
+          return handler.next(response);
         },
         onError: (DioException e, handler) {
           log('Dio请求错误: $e', error: e);
@@ -59,6 +66,7 @@ class BiliXDioService {
         },
       ),
     );
+    _dio.interceptors.add(CookieManager(_cookieJar));
     log('Dio初始化完成');
   }
 
@@ -227,15 +235,38 @@ class BiliXDioService {
   static Future<Response<dynamic>> get(
     String path, {
     dynamic queryParameters,
+    Options? options,
     CancelToken? cancelToken,
   }) async {
+    debugPrint('${_dio.options.headers['user-agent']}');
     final response = await _dio.get(
       path,
       queryParameters: queryParameters,
-      options: Options(headers: {'Cookie': await CookieGenerator.genCookie()}),
+      options: options,
+      //options: Options(headers: {'Cookie': await CookieGenerator.genCookie()}),
       cancelToken: cancelToken,
     );
     return response;
+  }
+
+  static Future<Response<dynamic>> passportRequest(
+    String url, {
+    String method = 'GET',
+    Map<String, dynamic>? queryParameters,
+    dynamic data,
+    Options? options,
+  }) async {
+    final opt = Options(
+      method: method,
+      followRedirects: true,
+      maxRedirects: 10,
+    );
+    return _dio.request<dynamic>(
+      url,
+      queryParameters: queryParameters,
+      data: data,
+      options: opt,
+    );
   }
 
   //删除动态

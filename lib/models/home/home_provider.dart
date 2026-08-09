@@ -23,7 +23,7 @@ class Home extends _$Home {
   Future<void> initProfile() async {
     log('获取用户信息...${DateTime.now()}');
 
-    Response<dynamic> response;
+    Response<dynamic>? response;
     try {
       response = await BiliXDioService.get(
         '/space/v2/myinfo',
@@ -35,8 +35,7 @@ class Home extends _$Home {
         imageUrl: response.data['data']['profile']['face'].toString(),
       );
     } catch (e) {
-      log('获取用户信息失败: $e', error: e); // 失败后解锁，允许重试
-      return;
+      log('获取用户信息失败: $e\n${response?.data.toString()}', error: e);
     }
   }
 }

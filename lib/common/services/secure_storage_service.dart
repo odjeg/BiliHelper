@@ -3,6 +3,8 @@
 import 'dart:developer';
 
 import 'package:bilihelper/common/services/bili_x_dio_service.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageService {
@@ -10,25 +12,24 @@ class SecureStorageService {
 
   // 从 url 保存 token
   static Future<void> saveTokenFromUrl(String url, {String? type}) async {
-    //使用url解析获取token
-    final token = Uri.parse(url).queryParameters;
+    log('保存token，URL: $url');
+    var resp = await BiliXDioService.passportRequest(url);
+    debugPrint('statusCode=${resp.statusCode}');
+    debugPrint('isRedirect=${resp.isRedirect}');
+    debugPrint('redirects=${resp.redirects}');
+    // 打印最终跳转的uri，看是不是跳到www.bilibili.com
+    debugPrint('最终跳转URI: ${resp.requestOptions.uri}');
+    // 打印最终响应头，看有没有Set‑Cookie
+    debugPrint('最终响应头: ${resp.headers.map}');
+    final List<Cookie> cookies = await BiliXDioService.cookieJar.loadForRequest(
+      Uri.parse("https://www.bilibili.com"),
+    );
+    debugPrint('cookies: $cookies');
     //保存token'DedeUserID', value: token['DedeUserID'] ?? '');
-    await secureStorage.write(
-      key: 'DedeUserID',
-      value: token['DedeUserID'] ?? '',
-    );
-    await secureStorage.write(
-      key: 'DedeUserID__ckMd5',
-      value: token['DedeUserID__ckMd5'] ?? '',
-    );
-    await secureStorage.write(key: 'Expires', value: token['Expires'] ?? '');
-    await secureStorage.write(key: 'SESSDATA', value: token['SESSDATA'] ?? '');
-    await secureStorage.write(key: 'bili_jct', value: token['bili_jct'] ?? '');
-    await secureStorage.write(key: 'gourl', value: token['gourl'] ?? '');
-    await secureStorage.write(
-      key: 'first_domain',
-      value: token['first_domain'] ?? '',
-    );
+    for (var cookie in cookies) {
+      await secureStorage.write(key: cookie.name, value: cookie.value);
+      log('保存cookie: ${cookie.name}=${cookie.value}');
+    }
   }
 
   static Future<void> getBuvid() async {
