@@ -1,4 +1,4 @@
-import 'package:bilihelper/common/network/clients/passport_x_client.dart';
+import 'package:bilihelper/common/network/clients/passport_client.dart';
 import 'package:dio/dio.dart';
 
 class PassportApi {

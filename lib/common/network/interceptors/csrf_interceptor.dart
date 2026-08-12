@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:bilihelper/common/services/secure_storage_service.dart';
-import 'package:flutter/foundation.dart';
 
 /// CSRF 自动注入拦截器
 /// 挂载位置：仅 bili_x_client

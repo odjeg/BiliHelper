@@ -1,9 +1,10 @@
 import 'dart:developer';
 import 'dart:math' hide log;
 
+import 'package:bilihelper/api/dynamic_api.dart';
+import 'package:bilihelper/api/reply_api.dart';
+import 'package:bilihelper/api/video_api.dart';
 import 'package:bilihelper/common/constants/load_state.dart';
-import 'package:bilihelper/common/services/bili_x_dio_service.dart';
-import 'package:bilihelper/common/utils/wbi_generator.dart';
 import 'package:bilihelper/models/lottery/dynamic_state.dart';
 import 'package:bilihelper/models/lottery/lottery_state.dart';
 import 'package:bilihelper/models/lottery/providers.dart/lottery_reply_provider.dart';
@@ -171,65 +172,57 @@ class Lottery extends _$Lottery {
         r'opus\/(\d+)',
       ).firstMatch(state.link)!.group(1)!;
 
-      var response = await BiliXDioService.get(
-        '/polymer/web-dynamic/v1/detail',
+      var responseData = await DynamicApi.getDynamicDetail(
         queryParameters: {'id': dynamicId},
         cancelToken: cancelToken,
       );
-      if (response.statusCode == 200) {
+      if (responseData.statusCode == 200) {
         dynamicState = DynamicState(
-          oid: response.data['data']['item']['basic']['rid_str'],
-          commentType: response.data['data']['item']['basic']['comment_type'],
+          oid: responseData.data['item']['basic']['rid_str'],
+          commentType: responseData.data['item']['basic']['comment_type'],
           userName:
-              response.data['data']['item']['modules']['module_author']['name'],
-          userMid:
-              response.data['data']['item']['modules']['module_author']['mid'],
+              responseData.data['item']['modules']['module_author']['name'],
+          userMid: responseData.data['item']['modules']['module_author']['mid'],
           useImage:
-              response.data['data']['item']['modules']['module_author']['face'],
-          editTime: response
-              .data['data']['item']['modules']['module_author']['pub_time'],
+              responseData.data['item']['modules']['module_author']['face'],
+          editTime:
+              responseData.data['item']['modules']['module_author']['pub_time'],
           type: 11,
-          likeCount: response
-              .data['data']['item']['modules']['module_stat']['like']['count'],
-          commentCount: response
-              .data['data']['item']['modules']['module_stat']['comment']['count'],
-          shareCount: response
-              .data['data']['item']['modules']['module_stat']['forward']['count'],
+          likeCount: responseData
+              .data['item']['modules']['module_stat']['like']['count'],
+          commentCount: responseData
+              .data['item']['modules']['module_stat']['comment']['count'],
+          shareCount: responseData
+              .data['item']['modules']['module_stat']['forward']['count'],
         );
       }
     } else if (state.link.contains('video/')) {
-      //filterDynamicController.type.value = 1;
-      String videoId = RegExp(
-        r'BV[a-zA-Z0-9]+',
-      ).firstMatch(state.link)!.group(0)!;
-      var response = await BiliXDioService.get(
-        '/web-interface/view',
-        queryParameters: {'bvid': videoId},
+      String bvid = RegExp(r'BV[a-zA-Z0-9]+').firstMatch(state.link)!.group(0)!;
+      var responseData = await VideoApi.getVideoDetail(
+        bvid: bvid,
         cancelToken: cancelToken,
       );
 
-      if (response.statusCode == 200) {
-        dynamicState = DynamicState(
-          oid: response.data['data']['stat']['aid'].toString(),
-          commentType: 1,
-          userName: response.data['data']['owner']['name'],
-          userMid: response.data['data']['owner']['mid'],
-          useImage: response.data['data']['owner']['face'],
-          editTime: DateFormat('yyyy-MM-dd HH:mm:ss').format(
-            DateTime.fromMillisecondsSinceEpoch(
-              response.data['data']['ctime'] * 1000,
-            ),
+      dynamicState = DynamicState(
+        oid: responseData.data['stat']['aid'].toString(),
+        commentType: 1,
+        userName: responseData.data['owner']['name'],
+        userMid: responseData.data['owner']['mid'],
+        useImage: responseData.data['owner']['face'],
+        editTime: DateFormat('yyyy-MM-dd HH:mm:ss').format(
+          DateTime.fromMillisecondsSinceEpoch(
+            responseData.data['ctime'] * 1000,
           ),
-          type: 1,
-          likeCount: response.data['data']['stat']['like'],
-          commentCount: response.data['data']['stat']['reply'],
-          shareCount: response.data['data']['stat']['share'],
-          viewCount: response.data['data']['stat']['view'],
-          danmakuCount: response.data['data']['stat']['danmaku'],
-          favoriteCount: response.data['data']['stat']['favorite'],
-          coinCount: response.data['data']['stat']['coin'],
-        );
-      }
+        ),
+        type: 1,
+        likeCount: responseData.data['stat']['like'],
+        commentCount: responseData.data['stat']['reply'],
+        shareCount: responseData.data['stat']['share'],
+        viewCount: responseData.data['stat']['view'],
+        danmakuCount: responseData.data['stat']['danmaku'],
+        favoriteCount: responseData.data['stat']['favorite'],
+        coinCount: responseData.data['stat']['coin'],
+      );
     }
     state = state.copyWith(dynamicState: dynamicState);
     return dynamicState;
@@ -252,24 +245,17 @@ class Lottery extends _$Lottery {
       do {
         if (state.loadState == LoadState.none) return [];
         log('正在加载评论列表...');
-        var response = await BiliXDioService.get(
-          '/v2/reply/wbi/main',
-          queryParameters: await WbiGenerator().genWbi(
-            params: {
-              'oid': dynamicState.oid,
-              'type': dynamicState.type,
-              'mode': 2,
-              'pagination_str': paginationStr,
-              'plat': 1,
-              'web_location': 1315875,
-            },
-          ),
+        var responseData = await ReplyApi.getReplyList(
+          oid: dynamicState.oid,
+          type: dynamicState.type,
+          mode: 2,
+          paginationStr: paginationStr,
           cancelToken: cancelToken,
         );
-        isEnd = response.data['data']['cursor']['is_end'];
+        isEnd = responseData.data['cursor']['is_end'];
         paginationStr =
-            '{"offset":"${response.data['data']['cursor']['pagination_reply']['next_offset']}"}';
-        for (var item in response.data['data']['replies']) {
+            '{"offset":"${responseData.data['cursor']['pagination_reply']['next_offset']}"}';
+        for (var item in responseData.data['replies']) {
           replyItems.add(ReplyState.fromJson(item));
           ref
               .read(lotteryReplyProvider.notifier)
@@ -278,8 +264,6 @@ class Lottery extends _$Lottery {
           rpidSet.add(item['rpid'].toString());
         }
         await Future.delayed(Duration(milliseconds: 1500));
-
-        //log('已加载评论列表: ${replyItems.length} 条, rpid去重后 ${rpidSet.length} 条');
       } while (!isEnd);
     } catch (e) {
       log('初始化抽奖链接评论列表失败');

@@ -4,7 +4,7 @@ import 'dart:developer';
 
 import 'package:bilihelper/api/passport_api.dart';
 import 'package:bilihelper/common/network/clients/bili_x_client.dart';
-import 'package:bilihelper/common/network/clients/passport_x_client.dart';
+import 'package:bilihelper/common/network/clients/passport_client.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';

@@ -1,12 +1,8 @@
-import 'dart:developer' show log;
-
-import 'package:bilihelper/api/dynamic_api.dart';
 import 'package:bilihelper/common/network/bili_dio_core.dart';
 import 'package:bilihelper/common/network/clients/bili_vc_client.dart';
 import 'package:bilihelper/common/network/clients/bili_x_client.dart';
-import 'package:bilihelper/common/network/clients/passport_x_client.dart';
+import 'package:bilihelper/common/network/clients/passport_client.dart';
 import 'package:bilihelper/common/services/auth_service.dart';
-import 'package:bilihelper/common/services/bili_x_dio_service.dart';
 import 'package:bilihelper/pages/home/home_page.dart';
 import 'package:bilihelper/pages/login/login_page.dart';
 import 'package:flutter/material.dart';

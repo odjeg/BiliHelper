@@ -5,7 +5,6 @@ import 'dart:developer';
 import 'package:bilihelper/api/dynamic_api.dart';
 import 'package:bilihelper/api/myinfo_api.dart';
 import 'package:bilihelper/common/constants/load_state.dart';
-import 'package:bilihelper/common/services/bili_x_dio_service.dart';
 import 'package:bilihelper/common/services/secure_storage_service.dart';
 import 'package:bilihelper/models/user/dynamic_model/dynamic_data_source.dart';
 import 'package:bilihelper/models/user/dynamic_model/dynamic_item.dart';

@@ -1,7 +1,8 @@
 import 'dart:developer';
 
-import 'package:bilihelper/common/services/bili_x_dio_service.dart';
+import 'package:bilihelper/common/network/clients/passport_client.dart';
 import 'package:bilihelper/common/services/secure_storage_service.dart';
+import 'package:flutter/material.dart';
 
 class AuthService {
   static Future<bool> checkNeedLogin() async {
@@ -9,17 +10,18 @@ class AuthService {
     bool needLogin = true;
     try {
       var csrf = await SecureStorageService.getToken('bili_jct');
+      debugPrint('csrf: $csrf');
       if (csrf == null || csrf.isEmpty) {
         needLogin = true;
         return needLogin;
       }
 
-      var response = await BiliXDioService.get(
-        'https://passport.bilibili.com/x/passport-login/web/cookie/info',
+      var response = await PassportXClient.instance.get(
+        '/x/passport-login/web/cookie/info',
         queryParameters: {'csrf': csrf},
       );
-      if (response.data['code'] == -101 ||
-          response.data['data']['refresh'] == true) {
+      debugPrint('response: ${response.data}');
+      if (response.data['refresh'] == true) {
         needLogin = true;
       } else {
         needLogin = false;
