@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:bilihelper/common/services/bili_x_dio_service.dart';
+import 'package:bilihelper/api/passport_api.dart';
 import 'package:bilihelper/common/services/secure_storage_service.dart';
 import 'package:bilihelper/models/login/login_state.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:developer';
 
@@ -34,28 +34,19 @@ class LoginNotifier extends Notifier<LoginState> {
   Future<void> _fetchQrData() async {
     log('开始获取二维码');
     try {
-      var response = await BiliXDioService.get(
-        'https://passport.bilibili.com/x/passport-login/web/qrcode/generate',
+      var responseData = await PassportApi.qrcodeGenerate();
+      debugPrint('获取到二维码响应：${responseData.data}');
+      state = state.copyWith(
+        url: responseData.data['url'],
+        qrcodeKey: responseData.data['qrcode_key'],
+        message: '请扫描二维码登录',
       );
-      debugPrint(
-        '二维码获取响应: ${response.data.runtimeType.toString()}, 内容: ${response.data}',
-      );
-      if (response.data['code'] == 0) {
-        // 校验接口返回成功
-        state = state.copyWith(
-          url: response.data['data']['url'],
-          qrcodeKey: response.data['data']['qrcode_key'],
-          message: '请扫描二维码登录',
-        );
-        log('获取到二维码：${state.url}');
-        log('二维码key：${state.qrcodeKey}');
-        _startPolling();
-        // 开始轮询检查二维码状态
-      } else {
-        state = state.copyWith(message: '获取二维码失败：${response.data['message']}');
-      }
-    } catch (e) {
-      log('获取二维码异常: $e', error: e);
+      log('获取到二维码：${state.url}');
+      log('二维码key：${state.qrcodeKey}');
+      // 开始轮询检查二维码状态
+      _startPolling();
+    } catch (e, stackTrace) {
+      log('获取二维码异常: $e', error: e, stackTrace: stackTrace);
       state = state.copyWith(message: '网络异常，无法获取二维码');
       // 延迟重试
       _retryFetchQr();
@@ -69,25 +60,23 @@ class LoginNotifier extends Notifier<LoginState> {
     state.isRequesting = true;
 
     try {
-      var response = await BiliXDioService.get(
-        'https://passport.bilibili.com/x/passport-login/web/qrcode/poll',
-        queryParameters: {'qrcode_key': state.qrcodeKey},
-      );
+      var responseData = await PassportApi.qrcodePoll(state.qrcodeKey!);
+
       state = state.copyWith(
-        message: '${response.data['data']['message']} ${DateTime.now()}',
+        message: '${responseData.data['message']}|${DateTime.now()}',
       );
-      switch (response.data['data']['code']) {
+      switch (responseData.data['code']) {
         case 0:
           // 登录成功
-          await _handleLoginSuccess(response.data['data']['url']);
+          await _handleLoginSuccess(responseData.data['url']);
           break;
         case 86038:
           // 二维码过期
           _handleQrExpired();
           break;
       }
-    } catch (e) {
-      log('检查二维码状态失败: $e', error: e);
+    } catch (e, stackTrace) {
+      log('检查二维码状态失败: $e', error: e, stackTrace: stackTrace);
     } finally {
       state = state.copyWith(isRequesting: false); // 释放请求锁
     }
@@ -100,11 +89,11 @@ class LoginNotifier extends Notifier<LoginState> {
 
   // 处理登录成功
   Future<void> _handleLoginSuccess(String url) async {
+    _stopPolling();
     log('登录成功，URL: $url');
     await SecureStorageService.saveTokenFromUrl(url);
     await SecureStorageService.getBuvid();
     await SecureStorageService.getWbi();
-    _stopPolling();
 
     // 登录成功后，跳转到主页面
     state = state.copyWith(message: '登录成功', isLoginSuccess: true);

@@ -1,7 +1,7 @@
 import 'dart:developer';
 
+import 'package:bilihelper/api/myinfo_api.dart';
 import 'package:bilihelper/common/constants/load_state.dart';
-import 'package:bilihelper/common/services/bili_x_dio_service.dart';
 import 'package:bilihelper/common/services/secure_storage_service.dart';
 import 'package:bilihelper/models/user/following_model/following_data_source.dart';
 import 'package:bilihelper/models/user/following_model/following_item.dart';
@@ -14,10 +14,8 @@ part 'following_provider.g.dart';
 class Following extends _$Following {
   @override
   FollowingState build() {
-    // ✅ 生命周期由 build 管理，invalidate 就会重置
     _cancelToken = CancelToken();
     ref.onDispose(() {
-      log('FollowingProvider 被销毁，取消未完成的请求');
       _cancelToken?.cancel();
     });
     return FollowingState();
@@ -54,10 +52,8 @@ class Following extends _$Following {
 
     try {
       do {
-        log('初始化关注列表...');
         try {
-          response = await BiliXDioService.get(
-            '/relation/followings',
+          response = await MyInfoApi.getMyFollowing(
             queryParameters: {
               'order': 'desc',
               'order_type': '',
@@ -80,8 +76,8 @@ class Following extends _$Following {
         if (cancelToken.isCancelled) break;
         final data = response.data;
         if (data == null) break;
-        final list = data['data']['list'] ?? [];
-        final total = data['data']['total'] ?? 0;
+        final list = data['list'] ?? [];
+        final total = data['total'] ?? 0;
 
         for (var item in list) {
           UserModel().followingItems.add(FollowingItem.fromJson(item));

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:bilihelper/common/services/secure_storage_service.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 
 // 与Python完全一致的混淆表
 class WbiGenerator {

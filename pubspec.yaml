@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_riverpod: ^3.2.1       # 核心库
   riverpod_annotation: ^4.0.2     # 注解（代码生成用）
-  dio: ^5.9.2                  # HTTP客户端
+  dio: ^5.11.0                  # HTTP客户端
   flutter_secure_storage: ^10.0.0  # 安全存储
   qr_flutter: ^4.1.0            # 二维码扫描库
   random_user_agents: ^1.0.22  # 随机UA库
@@ -49,6 +49,7 @@ dependencies:
   window_manager: ^0.5.1     # 窗口管理库
   dio_cookie_manager: ^3.5.0 # Cookie管理器
   cookie_jar: ^4.0.9 # CookieJar库
+  collection: ^1.19.1 # 集合库
 
 
 dev_dependencies:

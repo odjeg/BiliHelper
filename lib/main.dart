@@ -1,5 +1,10 @@
 import 'dart:developer' show log;
 
+import 'package:bilihelper/api/dynamic_api.dart';
+import 'package:bilihelper/common/network/bili_dio_core.dart';
+import 'package:bilihelper/common/network/clients/bili_vc_client.dart';
+import 'package:bilihelper/common/network/clients/bili_x_client.dart';
+import 'package:bilihelper/common/network/clients/passport_x_client.dart';
 import 'package:bilihelper/common/services/auth_service.dart';
 import 'package:bilihelper/common/services/bili_x_dio_service.dart';
 import 'package:bilihelper/pages/home/home_page.dart';
@@ -24,9 +29,16 @@ void main() async {
     await windowManager.focus();
   });
 
-  await BiliXDioService.init();
+  // 1. 先初始化核心底座
+  BiliDioCore.instance.init();
+  // 2. 再初始化passport客户端
+  PassportXClient.instance.init();
+  // 3. 再初始化各业务域名客户端
+  BiliXClient.instance.init();
+  // 4. 再初始化各业务服务
+  BiliVcClient.instance.init();
+
   bool needLogin = await AuthService.checkNeedLogin();
-  log('needLogin:$needLogin');
   runApp(ProviderScope(child: MyApp(needLogin: needLogin)));
 }
 

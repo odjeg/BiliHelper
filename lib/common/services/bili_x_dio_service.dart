@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:math' as math;
 
 import 'package:bilihelper/common/services/secure_storage_service.dart';
 import 'package:bilihelper/common/utils/cookie_generator.dart';
-import 'package:bilihelper/common/utils/wbi_generator.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:random_user_agents/random_user_agents.dart';
@@ -70,167 +68,6 @@ class BiliXDioService {
     log('Dio初始化完成');
   }
 
-  // 转发动态
-  static Future<Response<dynamic>> repostDynamic({
-    required Map<String, dynamic> data,
-    CancelToken? cancelToken,
-  }) async {
-    var response = await _dio.post(
-      '/dynamic/feed/create/dyn',
-      queryParameters: await WbiGenerator().genWbi(
-        params: {
-          'platform': 'web',
-          'csrf': await SecureStorageService.getToken('bili_jct'),
-        },
-      ),
-      data: {
-        'dyn_req': {
-          'content': {
-            'contents': [
-              {
-                'raw_text': data['raw_text'],
-                'type': data['type'],
-                'biz_id': "",
-              },
-            ],
-          },
-          'scene': data['scene'],
-          'attach_card': null,
-          'upload_id':
-              "${await SecureStorageService.getToken('DedeUserID')}_${DateTime.now().millisecondsSinceEpoch}_${math.Random().nextInt(8999) + 1000}",
-          'meta': {
-            'app_meta': {'from': 'create.dynamic.web', 'mobi_app': 'web'},
-          },
-          'option': {'aigc': 2},
-        },
-        'web_repost_src': {'dyn_id_str': data['dyn_id_str']},
-      },
-      options: Options(headers: {'Cookie': await CookieGenerator.genCookie()}),
-      cancelToken: cancelToken,
-    );
-    return response;
-  }
-
-  // 关注/取消关注
-  static Future<Response<dynamic>> userModify({
-    required int fid,
-    required int act, //1关注，2取消关注
-    CancelToken? cancelToken,
-  }) async {
-    var response = await _dio.post(
-      '/relation/modify',
-      data: {
-        'fid': fid,
-        'act': act,
-        'csrf': await SecureStorageService.getToken('bili_jct'),
-      },
-      options: Options(
-        headers: {
-          'cookie': await CookieGenerator.genCookie(),
-          'content-type': 'application/x-www-form-urlencoded',
-          'origin': 'https://space.bilibili.com',
-          'referer': 'https://space.bilibili.com/$fid?',
-        },
-      ),
-      cancelToken: cancelToken,
-    );
-    return response;
-  }
-
-  // 预约抽奖
-  static Future<Response<dynamic>> reserveLottery({
-    required String dynamicIdStr,
-    required int reserveId,
-    CancelToken? cancelToken,
-  }) async {
-    var response = await _dio.post(
-      '/dynamic/feed/reserve/click',
-      queryParameters: {
-        'csrf': await SecureStorageService.getToken('bili_jct'),
-      },
-      data: {
-        'cur_btn_status': 1,
-        'dynamic_id_str': dynamicIdStr,
-        'reserve_id': reserveId,
-      },
-      options: Options(
-        headers: {
-          'cookie': await CookieGenerator.genCookie(),
-          'content-type': 'application/json',
-          'origin': 'https://space.bilibili.com',
-          'referer':
-              'https://www.bilibili.com/opus/$dynamicIdStr?spm_id_from=333.1387.0.0&spm_id_from=333.1369.0.0',
-        },
-      ),
-      cancelToken: cancelToken,
-    );
-    return response;
-  }
-
-  // 点赞/取消点赞
-  static Future<Response<dynamic>> userThumb({
-    required String dynamicIdStr,
-    required int up, //1点赞，2取消点赞
-  }) async {
-    var response = await _dio.post(
-      '/dynamic/feed/dyn/thumb',
-      queryParameters: {
-        'csrf': await SecureStorageService.getToken('bili_jct'),
-      },
-      //{"dyn_id_str":"1169139614670127109","up":1,"spmid":"333.1369.0.0","from_spmid":["333.1387.0.0","333.1369.0.0"]}
-      data: {
-        'dyn_id_str': dynamicIdStr,
-        'up': up,
-        'spmid': '333.1369.0.0',
-        'from_spmid': ['333.1387.0.0', '333.1369.0.0'],
-      },
-      options: Options(
-        headers: {
-          'cookie': await CookieGenerator.genCookie(),
-          'content-type': 'application/json',
-          'origin': 'https://space.bilibili.com',
-          'referer':
-              'https://www.bilibili.com/opus/$dynamicIdStr?spm_id_from=333.1387.0.0&spm_id_from=333.1369.0.0',
-        },
-      ),
-    );
-    return response;
-  }
-
-  // 评论/回复评论
-  static Future<Response<dynamic>> userReplyAdd({
-    required String oid,
-    required String message,
-    required int type,
-    CancelToken? cancelToken,
-  }) async {
-    var response = await _dio.post(
-      '/v2/reply/add',
-      queryParameters: await WbiGenerator().genWbi(params: {}),
-      data: {
-        'plat': 1,
-        'oid': oid,
-        'type': type,
-        'message': message,
-        'at_name_to_mid': {},
-        'gaia_source': 'main_web',
-        'csrf': await SecureStorageService.getToken('bili_jct'),
-        'statistics': {'appId': 100, 'platform': 5},
-      },
-      options: Options(
-        headers: {
-          'cookie': await CookieGenerator.genCookie(),
-          'content-type': 'application/x-www-form-urlencoded',
-          'origin': 'https://space.bilibili.com',
-          'referer':
-              'https://www.bilibili.com/opus/$oid?spm_id_from=333.1387.0.0&spm_id_from=333.1369.0.0',
-        },
-      ),
-      cancelToken: cancelToken,
-    );
-    return response;
-  }
-
   //get
   static Future<Response<dynamic>> get(
     String path, {
@@ -238,12 +75,10 @@ class BiliXDioService {
     Options? options,
     CancelToken? cancelToken,
   }) async {
-    debugPrint('${_dio.options.headers['user-agent']}');
     final response = await _dio.get(
       path,
       queryParameters: queryParameters,
-      options: options,
-      //options: Options(headers: {'Cookie': await CookieGenerator.genCookie()}),
+      options: Options(headers: {'Cookie': await CookieGenerator.genCookie()}),
       cancelToken: cancelToken,
     );
     return response;
@@ -272,7 +107,7 @@ class BiliXDioService {
   //删除动态
   static Future<Response<dynamic>> removeDynamic({
     required String dynamicIdStr,
-    required int dynType, //1删除普通动态，2删除转发动态，3删除点赞动态，44删除转发动态
+    required int dynType, //1删除普通动态，2删除转发动态，3删除点赞动态，4删除转发动态
     CancelToken? cancelToken,
   }) async {
     String? mid = await SecureStorageService.getToken('DedeUserID');

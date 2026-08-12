@@ -1,3 +1,5 @@
+import 'package:bilihelper/models/user/user_model.dart';
+
 class DynamicItem {
   final String idStr; // 个人转发动态id
   final String pubTs; // 动态发布时间戳
@@ -35,9 +37,11 @@ class DynamicItem {
       origIdStr: json['orig']['id_str'],
       origMid: json['orig']['modules']['module_author']['mid'],
       origName: json['orig']['modules']['module_author']['name'],
-      following:
-          json['orig']['modules']['module_author']['following'] !=
-          0, //为2 需要查询一下
+      //由于b站接口更改，导致无法直接从动态列表当中获取是否关注
+      following: UserModel().followingItems.any(
+        (item) =>
+            item.mid == json['orig']['modules']['module_author']['mid'] as int,
+      ),
       dynamicText: json['modules']['module_dynamic']['desc']['text'],
     );
   }

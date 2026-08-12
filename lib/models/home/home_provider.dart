@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:bilihelper/common/services/bili_x_dio_service.dart';
+import 'package:bilihelper/api/myinfo_api.dart';
 import 'package:bilihelper/models/home/home_state.dart';
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -10,9 +10,6 @@ part 'home_provider.g.dart';
 class Home extends _$Home {
   @override
   HomeState build() {
-    ref.onDispose(() {
-      log('HomeProvider 被销毁');
-    });
     return HomeState();
   }
 
@@ -23,19 +20,16 @@ class Home extends _$Home {
   Future<void> initProfile() async {
     log('获取用户信息...${DateTime.now()}');
 
-    Response<dynamic>? response;
+    Response<dynamic> response;
     try {
-      response = await BiliXDioService.get(
-        '/space/v2/myinfo',
-        queryParameters: {'web_location': '333.1387'},
-      );
+      response = await MyInfoApi.getMyInfo();
       state = state.copyWith(
-        mid: response.data['data']['profile']['mid'].toString(),
-        uname: response.data['data']['profile']['name'].toString(),
-        imageUrl: response.data['data']['profile']['face'].toString(),
+        mid: response.data['profile']['mid'].toString(),
+        uname: response.data['profile']['name'].toString(),
+        imageUrl: response.data['profile']['face'].toString(),
       );
-    } catch (e) {
-      log('获取用户信息失败: $e\n${response?.data.toString()}', error: e);
+    } catch (e, stackTrace) {
+      log('获取用户信息失败: $e', error: e, stackTrace: stackTrace);
     }
   }
 }

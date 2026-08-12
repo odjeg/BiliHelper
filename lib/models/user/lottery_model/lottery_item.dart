@@ -1,14 +1,35 @@
 class LotteryItem {
-  String businessId; //抽奖动态id
-  String? commentIdStr; //用来评论评论id|oid
+  /// [businessId] 抽奖动态id
+  String businessId;
+
+  /// [commentIdStr] 用来评论,评论时将commentIdStr作为参数传递给oid
+  String? commentIdStr;
+
+  /// [mid] 用户UID
   int? mid;
+
+  /// [name] 用户昵称
   String? name;
-  bool? followed; //是否关注
-  int? lotteryTime; //开奖时间
-  int? ts; //动态时间戳
-  String? isForward; //是否转发如果是预约抽奖则为是否预约
-  String? lotteryType; //官方抽奖 直播预约 视频预约 普通抽奖
-  int? rid; //预约抽奖需要用到
+
+  /// [followed] 是否已关注用户
+  bool? followed;
+
+  /// [lotteryTime] 开奖时间
+  int? lotteryTime;
+
+  /// [ts] 动态时间戳
+  /// 用于判断是否是最新动态
+  int? ts;
+
+  /// [isForward] 是否转发预约抽奖
+  String? isForward;
+
+  /// [lotteryType] 抽奖类型
+  /// 官方抽奖 直播预约 视频预约 普通抽奖
+  String? lotteryType;
+
+  /// [rid] 预约抽奖需要用到
+  String? rid;
   LotteryItem({
     required this.businessId,
     this.mid,

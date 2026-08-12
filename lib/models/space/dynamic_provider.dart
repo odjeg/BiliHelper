@@ -2,14 +2,16 @@
 
 import 'dart:developer';
 
+import 'package:bilihelper/api/dynamic_api.dart';
+import 'package:bilihelper/api/myinfo_api.dart';
 import 'package:bilihelper/common/constants/load_state.dart';
 import 'package:bilihelper/common/services/bili_x_dio_service.dart';
 import 'package:bilihelper/common/services/secure_storage_service.dart';
-import 'package:bilihelper/common/utils/wbi_generator.dart';
 import 'package:bilihelper/models/user/dynamic_model/dynamic_data_source.dart';
 import 'package:bilihelper/models/user/dynamic_model/dynamic_item.dart';
 import 'package:bilihelper/models/user/user_model.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -22,7 +24,6 @@ class Dynamic extends _$Dynamic {
     _cancelToken = CancelToken();
     ref.onDispose(() {
       _cancelToken?.cancel();
-      log('DynamicProvider已被销毁，取消请求');
     });
     return DynamicState(loadState: LoadState.none, count: 0);
   }
@@ -39,6 +40,7 @@ class Dynamic extends _$Dynamic {
   }
 
   Future<void> initDynamicInfo() async {
+    debugPrint('初始化动态列表...');
     final CancelToken cancelToken = _cancelToken!;
 
     if (cancelToken.isCancelled) return;
@@ -53,19 +55,15 @@ class Dynamic extends _$Dynamic {
 
     try {
       do {
-        log('初始化动态列表...');
         try {
-          response = await BiliXDioService.get(
-            '/polymer/web-dynamic/v1/feed/space',
-            queryParameters: await WbiGenerator().genWbi(
-              params: {
-                'offset': offset,
-                'host_mid': host_mid,
-                'timezone_offset': '-480',
-                'platform': 'web',
-                'web_location': '333.1387',
-              },
-            ),
+          response = await MyInfoApi.getMyDynamic(
+            queryParameters: {
+              'offset': offset,
+              'host_mid': host_mid,
+              'timezone_offset': '-480',
+              'platform': 'web',
+              'web_location': '333.1387',
+            },
             cancelToken: cancelToken,
           );
         } on DioException catch (e) {
@@ -81,12 +79,12 @@ class Dynamic extends _$Dynamic {
 
         final data = response.data;
         if (data == null) break;
-        offset = data['data']['offset'] ?? '';
-        bool hasMore = data['data']['has_more'] ?? false;
+        offset = data['offset'] ?? '';
+        bool hasMore = data['has_more'] ?? false;
 
-        for (var item in data['data']['items'] ?? []) {
-          if (item['type'] == 'DYNAMIC_TYPE_FORWARD') //为转发动态
-          {
+        for (var item in data['items'] ?? []) {
+          //DYNAMIC_TYPE_FORWARD标识为转发动态
+          if (item['type'] == 'DYNAMIC_TYPE_FORWARD') {
             UserModel().dynamicItems.add(DynamicItem.fromJson(item));
           }
         }
@@ -103,9 +101,9 @@ class Dynamic extends _$Dynamic {
           break;
         }
       } while (true);
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (!cancelToken.isCancelled) {
-        log('初始化动态列表失败: $e', error: e);
+        log('初始化动态列表失败: $e', error: e, stackTrace: stackTrace);
         updateLoadStatus(LoadState.error);
         return;
       }
@@ -134,16 +132,15 @@ class Dynamic extends _$Dynamic {
       dynamicDataSource.notifyListeners();
       // 请求接口
       try {
-        var _ = await BiliXDioService.removeDynamic(
+        var _ = await DynamicApi.removeDynamic(
           dynamicIdStr: dynamic_id_str,
           dynType: 1,
         );
-      } catch (e) {
-        log('删除动态失败: $e', error: e);
+      } catch (e, stackTrace) {
+        log('删除动态失败: $e', error: e, stackTrace: stackTrace);
         continue;
       }
       await Future.delayed(const Duration(milliseconds: 2500));
-      Future.delayed(const Duration(milliseconds: 2500));
     }
     // 最后统一清空选择
     dataGridController.selectedRows.clear();
