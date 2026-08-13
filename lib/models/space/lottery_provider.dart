@@ -342,6 +342,9 @@ class Lottery extends _$Lottery {
         }
         lotteryDataSource.notifyListeners();
       } else if (item.lotteryType == '转发抽奖') {
+        if (item.isForward == '已转发') {
+          continue;
+        }
         flag = true;
         // 点赞
         try {
