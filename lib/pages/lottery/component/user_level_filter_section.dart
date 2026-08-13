@@ -15,7 +15,6 @@ class UserLevelFilterSection extends ConsumerWidget {
     final isLoading = ref.watch(
       lotteryProvider.select((s) => s.loadState == LoadState.loading),
     );
-    log('isLoading: $isLoading');
 
     return Row(
       children: [

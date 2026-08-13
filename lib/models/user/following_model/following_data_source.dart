@@ -44,6 +44,7 @@ class FollowingDataSource extends DataGridSource {
                 text: dataGridCell.value.toString(),
                 style: TextStyle(
                   color: Colors.blue[700],
+                  fontFamily: 'Noto Sans SC',
                   decoration: TextDecoration.underline,
                 ),
                 recognizer: TapGestureRecognizer()

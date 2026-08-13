@@ -36,7 +36,6 @@ class _DrawLotteryState extends ConsumerState<DrawLottery>
 
   @override
   void dispose() {
-    log('DrawLottery dispose');
     animationController.stop();
     super.dispose();
   }
