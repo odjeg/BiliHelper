@@ -30,10 +30,11 @@ class _ClawlerPageState extends ConsumerState<ClawlerPage> {
         TextPosition(offset: _controller.text.length),
       );
     });
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Scaffold(
-        body: Column(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
           children: [
             Row(
               children: [

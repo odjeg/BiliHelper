@@ -24,6 +24,7 @@ class _LotteryPageState extends ConsumerState<LotteryPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [

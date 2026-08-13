@@ -16,6 +16,7 @@ class _DynamicPageState extends ConsumerState<DynamicPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           _buildFollowingActionBar(),
@@ -33,7 +34,7 @@ class _DynamicPageState extends ConsumerState<DynamicPage> {
           height: 50,
           margin: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(5),
             boxShadow: [
               BoxShadow(

@@ -15,6 +15,7 @@ class _FollowingPageState extends ConsumerState<FollowingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           _buildFollowingActionBar(),
@@ -32,7 +33,7 @@ class _FollowingPageState extends ConsumerState<FollowingPage> {
           height: 50,
           margin: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(5),
             boxShadow: [
               BoxShadow(

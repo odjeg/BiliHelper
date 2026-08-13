@@ -52,52 +52,55 @@ class _DrawLotteryState extends ConsumerState<DrawLottery>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildDrawLotteryButton(),
-            SizedBox(width: 20),
-            Consumer(
-              builder: (context, ref, child) {
-                var loadState = ref.watch(
-                  lotteryProvider.select((value) => value.loadState),
-                );
-                return IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: loadState == LoadState.loading
-                      ? () {
-                          if (animationController.isAnimating) {
-                            animationController.stop();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+      child: Column(
+        children: [
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildDrawLotteryButton(),
+              SizedBox(width: 20),
+              Consumer(
+                builder: (context, ref, child) {
+                  var loadState = ref.watch(
+                    lotteryProvider.select((value) => value.loadState),
+                  );
+                  return IconButton(
+                    icon: Icon(Icons.cancel),
+                    onPressed: loadState == LoadState.loading
+                        ? () {
+                            if (animationController.isAnimating) {
+                              animationController.stop();
+                            }
+                            ref
+                                .read(lotteryProvider.notifier)
+                                .updateLoadState(LoadState.none);
                           }
-                          ref
-                              .read(lotteryProvider.notifier)
-                              .updateLoadState(LoadState.none);
-                        }
-                      : null,
-                );
-              },
-            ),
-          ],
-        ),
-        SizedBox(height: 20),
-        Consumer(
-          builder: (context, ref, child) {
-            var dynamicState = ref.watch(
-              lotteryProvider.select((value) => value.dynamicState),
-            );
-            return dynamicState != null
-                ? _buildDynamicDetail()
-                : SizedBox.shrink();
-          },
-        ),
-        SizedBox(height: 20),
-        _buildReplyList(),
-        SizedBox(height: 20),
-        _buildLuckUserList(),
-      ],
+                        : null,
+                  );
+                },
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Consumer(
+            builder: (context, ref, child) {
+              var dynamicState = ref.watch(
+                lotteryProvider.select((value) => value.dynamicState),
+              );
+              return dynamicState != null
+                  ? _buildDynamicDetail()
+                  : SizedBox.shrink();
+            },
+          ),
+          SizedBox(height: 20),
+          _buildReplyList(),
+          SizedBox(height: 20),
+          _buildLuckUserList(),
+        ],
+      ),
     );
   }
 

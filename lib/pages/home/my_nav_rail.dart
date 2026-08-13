@@ -28,6 +28,7 @@ class _MyNavRailState extends ConsumerState<MyNavRail> {
         hoverColor: Colors.transparent,
       ),
       child: NavigationRail(
+        backgroundColor: Colors.white,
         selectedIndex: widget.selectedIndex,
         selectedIconTheme: IconThemeData(color: Colors.pink[200]),
         unselectedIconTheme: IconThemeData(color: Colors.grey),
@@ -58,11 +59,25 @@ class _MyNavRailState extends ConsumerState<MyNavRail> {
         ],
         trailing: Column(
           children: [
-            ClipOval(
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.pink,
+                    blurRadius: 0.3,
+                    offset: Offset(0, 0),
+                  ),
+                ],
+              ),
+              clipBehavior: Clip.antiAlias,
               child: Image.network(
                 ref.watch(homeProvider.select((value) => value.imageUrl ?? '')),
-                width: 45,
-                height: 45,
+                width: 50,
+                height: 50,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
                   return CircularProgressIndicator();

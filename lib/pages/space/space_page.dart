@@ -21,6 +21,7 @@ class _SpacePageState extends State<SpacePage> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(50),
           child: TabBar(

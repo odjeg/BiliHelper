@@ -32,14 +32,9 @@ class FollowingDataSource extends DataGridSource {
   @override
   DataGridRowAdapter? buildRow(DataGridRow row) {
     return DataGridRowAdapter(
-      color:
-          row
-                  .getCells()
-                  .firstWhere((element) => element.columnName == 'special')
-                  .value ==
-              "是"
-          ? Colors.green[400]
-          : null,
+      color: effectiveRows.indexOf(row) % 2 == 0
+          ? Colors.white
+          : const Color(0xfff7f8fa),
       cells: row.getCells().map<Widget>((dataGridCell) {
         switch (dataGridCell.columnName) {
           case 'uname':

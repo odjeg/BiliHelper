@@ -43,6 +43,9 @@ class DynamicDataSource extends DataGridSource {
   @override
   DataGridRowAdapter? buildRow(DataGridRow row) {
     return DataGridRowAdapter(
+      color: effectiveRows.indexOf(row) % 2 == 0
+          ? Colors.white
+          : const Color(0xfff7f8fa),
       cells: row.getCells().map<Widget>((dataGridCell) {
         return Container(
           alignment: Alignment.center,

@@ -16,6 +16,7 @@ class _LotteryPageState extends ConsumerState<LotteryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Row(
@@ -25,7 +26,7 @@ class _LotteryPageState extends ConsumerState<LotteryPage> {
                 height: 50,
                 margin: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(5),
                   boxShadow: [
                     BoxShadow(
