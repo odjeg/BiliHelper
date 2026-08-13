@@ -15,12 +15,14 @@ class _ClawlerPageState extends ConsumerState<ClawlerPage> {
   @override
   initState() {
     super.initState();
-    _controller.text = ref.read(crawlerProvider.select((value) => value.url));
+    _controller.text = ref.read(
+      crawlerProvider.select((value) => value.url ?? ''),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final errorText = ref.watch(crawlerProvider.select((s) => s.errorText));
+    var errorText = ref.watch(crawlerProvider.select((s) => s.errorText));
     ref.listen<String?>(crawlerProvider.select((value) => value.url), (
       previous,
       current,
@@ -61,7 +63,7 @@ class _ClawlerPageState extends ConsumerState<ClawlerPage> {
                             ref.read(crawlerProvider.notifier).updateUrl('');
                           },
                         ),
-                        errorText: errorText == '' ? null : errorText,
+                        errorText: errorText,
                         errorStyle: TextStyle(height: 0, fontSize: 0),
                       ),
                       onChanged: (value) {

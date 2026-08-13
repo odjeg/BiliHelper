@@ -90,13 +90,14 @@ class _MyNavRailState extends ConsumerState<MyNavRail> {
               icon: Icon(Icons.logout),
               iconSize: 20,
               onPressed: () async {
+                final navigator = Navigator.of(context);
                 await UserModel().logout(ref);
-                if (!mounted) return;
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                  (route) => false,
-                );
+                if (mounted) {
+                  navigator.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                    (route) => false,
+                  );
+                }
               },
             ),
           ],

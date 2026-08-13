@@ -70,9 +70,11 @@ class _LinkInputSectionState extends ConsumerState<LinkInputSection> {
               ),
               autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (value) {
-                if (RegExp(
+                if (value == null ||
+                    value.isEmpty ||
+                    RegExp(
                       r'https://www.bilibili.com/opus/\d+',
-                    ).hasMatch(value!) ||
+                    ).hasMatch(value) ||
                     RegExp(
                       r'https://www.bilibili.com/video/BV\w+',
                     ).hasMatch(value)) {
