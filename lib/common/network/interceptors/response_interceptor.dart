@@ -23,7 +23,14 @@ class ResponseInterceptor extends Interceptor {
     if (data['data'].isEmpty) {
       debugPrint('ResponseInterceptor: data 为空，返回 message: $message');
       response.data = message;
-      return handler.next(response);
+      return handler.reject(
+        DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'B站错误 [$code]: $message',
+          type: DioExceptionType.badResponse,
+        ),
+      );
     }
     // 业务成功：直接返回 data 字段，简化业务层取值
     if (code == 0) {
