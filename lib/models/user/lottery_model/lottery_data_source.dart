@@ -1,4 +1,6 @@
+import 'package:bilihelper/common/utils/url_lanucher.dart';
 import 'package:bilihelper/models/user/user_model.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -49,13 +51,52 @@ class LotteryDataSource extends DataGridSource {
           ? Colors.white
           : const Color(0xfff7f8fa),
       cells: row.getCells().map<Widget>((dataGridCell) {
-        return Text(
-          textAlign: TextAlign.center,
-          dataGridCell.value.toString(),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontFamily: 'Noto Sans SC'),
-        );
+        switch (dataGridCell.columnName) {
+          case 'business_id':
+            return RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                text: dataGridCell.value.toString(),
+                style: TextStyle(
+                  color: Colors.blue[700],
+                  fontFamily: 'Noto Sans SC',
+                  decoration: TextDecoration.underline,
+                ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    UrlLauncher.launch(
+                      'https://www.bilibili.com/opus/${dataGridCell.value.toString()}?spm_id_from=333.1387.0.0',
+                    );
+                  },
+              ),
+            );
+          case 'name':
+            return RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                text: dataGridCell.value.toString(),
+                style: TextStyle(
+                  color: Colors.blue[700],
+                  fontFamily: 'Noto Sans SC',
+                  decoration: TextDecoration.underline,
+                ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    UrlLauncher.launch(
+                      'https://space.bilibili.com/${row.getCells().firstWhere((element) => element.columnName == 'mid').value}',
+                    );
+                  },
+              ),
+            );
+          default:
+            return Text(
+              textAlign: TextAlign.center,
+              dataGridCell.value.toString(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontFamily: 'Noto Sans SC'),
+            );
+        }
       }).toList(),
     );
   }

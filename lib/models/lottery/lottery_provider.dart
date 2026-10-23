@@ -147,6 +147,20 @@ class Lottery extends _$Lottery {
   }
 
   Future<void> startDarwLottery() async {
+    if (state.link.trim().isEmpty ||
+        !RegExp(r'https://www.bilibili.com/opus/\d+').hasMatch(state.link) &&
+            !RegExp(
+              r'https://www.bilibili.com/video/BV\w+',
+            ).hasMatch(state.link)) {
+      return;
+    }
+    if (state.lvFilter.values.every((element) => element == false)) {
+      return;
+    }
+    if (state.prizeItems.any((element) => element.$1.trim().isEmpty)) {
+      return;
+    }
+
     final cancelToken = _cancelToken!;
     state = state.copyWith(
       loadState: LoadState.loading,

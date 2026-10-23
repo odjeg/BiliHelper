@@ -1,6 +1,7 @@
 import 'package:bilihelper/common/constants/load_state.dart';
 import 'package:bilihelper/models/lottery/lottery_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SingleAwardSection extends ConsumerStatefulWidget {
@@ -74,6 +75,7 @@ class _SingleAwardSectionState extends ConsumerState<SingleAwardSection> {
                     .updateCount(int.parse(value));
               }
             },
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             validator: (value) {
               if (value == null ||
                   value.isEmpty ||

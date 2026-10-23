@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bilihelper/common/constants/load_state.dart';
 import 'package:bilihelper/models/lottery/lottery_provider.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +63,7 @@ class _LinkInputSectionState extends ConsumerState<LinkInputSection> {
                   borderSide: BorderSide(color: Colors.pink[200]!),
                   borderRadius: BorderRadius.circular(5),
                 ),
+                //helperText: '请输入抽奖动态或视频链接',
                 errorStyle: TextStyle(height: 0, fontSize: 0),
               ),
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -78,11 +77,13 @@ class _LinkInputSectionState extends ConsumerState<LinkInputSection> {
                       r'https://www.bilibili.com/video/BV\w+',
                     ).hasMatch(value)) {
                   return null;
+                } else if (value.trim().isEmpty == true) {
+                  return 'error';
                 }
                 return 'error';
               },
               onChanged: (value) {
-                ref.read(lotteryProvider.notifier).updateLink(value);
+                ref.read(lotteryProvider.notifier).updateLink(value.trim());
               },
             ),
           ),

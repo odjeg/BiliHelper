@@ -13,7 +13,6 @@ import 'package:window_manager/window_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SemanticsBinding.instance.ensureSemantics();
-  WidgetsFlutterBinding.ensureInitialized();
 
   await windowManager.ensureInitialized();
   WindowOptions windowOptions = const WindowOptions(

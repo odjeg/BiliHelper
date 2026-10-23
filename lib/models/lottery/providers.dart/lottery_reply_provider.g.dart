@@ -47,7 +47,7 @@ abstract class _$LotteryReply extends $Notifier<List<ReplyState>> {
   List<ReplyState> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<List<ReplyState>, List<ReplyState>>;
     final element =
         ref.element
@@ -57,6 +57,6 @@ abstract class _$LotteryReply extends $Notifier<List<ReplyState>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

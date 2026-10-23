@@ -40,13 +40,13 @@ final class DynamicProvider extends $NotifierProvider<Dynamic, DynamicState> {
   }
 }
 
-String _$dynamicHash() => r'292845721ae6cbbd78b3a7e382e7b5c4b3b6d583';
+String _$dynamicHash() => r'cdebe2b5f9c09559d82b038288672c2f2c7d8926';
 
 abstract class _$Dynamic extends $Notifier<DynamicState> {
   DynamicState build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<DynamicState, DynamicState>;
     final element =
         ref.element
@@ -56,6 +56,6 @@ abstract class _$Dynamic extends $Notifier<DynamicState> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

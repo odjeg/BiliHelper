@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bilihelper/common/constants/load_state.dart';
 import 'package:bilihelper/models/lottery/lottery_provider.dart';
 import 'package:flutter/material.dart';

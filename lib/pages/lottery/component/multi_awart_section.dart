@@ -1,6 +1,7 @@
 import 'package:bilihelper/common/constants/load_state.dart';
 import 'package:bilihelper/models/lottery/lottery_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MultiAwardSection extends ConsumerStatefulWidget {
@@ -95,6 +96,7 @@ class _MultiAwardSectionState extends ConsumerState<MultiAwardSection> {
                         isDense: true,
                         contentPadding: EdgeInsets.symmetric(horizontal: 4),
                       ),
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (value) {
                         if (int.tryParse(value) != null &&
                             int.tryParse(value)! > 0) {

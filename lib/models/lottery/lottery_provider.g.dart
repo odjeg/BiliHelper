@@ -40,13 +40,13 @@ final class LotteryProvider extends $NotifierProvider<Lottery, LotteryState> {
   }
 }
 
-String _$lotteryHash() => r'e6cd574266dd34ad2c3faa171a0c3dd431709481';
+String _$lotteryHash() => r'9df85f888ac0db7d234c057c8a0edfad19134344';
 
 abstract class _$Lottery extends $Notifier<LotteryState> {
   LotteryState build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<LotteryState, LotteryState>;
     final element =
         ref.element
@@ -56,6 +56,6 @@ abstract class _$Lottery extends $Notifier<LotteryState> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

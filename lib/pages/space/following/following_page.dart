@@ -14,12 +14,39 @@ class FollowingPage extends ConsumerStatefulWidget {
 class _FollowingPageState extends ConsumerState<FollowingPage> {
   @override
   Widget build(BuildContext context) {
+    var state = ref.watch(followingProvider.select((state) => state.loadState));
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
           _buildFollowingActionBar(),
-          Expanded(child: _buildFollowingSfDataGrid()),
+          //Expanded(child: _buildFollowingSfDataGrid()),
+          Expanded(
+            child: state == LoadState.none
+                ? _buildEmpty()
+                : _buildFollowingSfDataGrid(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmpty() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.inbox_outlined, size: 56, color: Colors.grey[300]),
+          const SizedBox(height: 8),
+          Text(
+            '暂无关注列表',
+            style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '点击左上角「刷新关注列表」开始',
+            style: TextStyle(fontSize: 11, color: Colors.grey[400]),
+          ),
         ],
       ),
     );

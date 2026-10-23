@@ -41,13 +41,13 @@ final class FollowingProvider
   }
 }
 
-String _$followingHash() => r'0723da39acb00e4c16c89c98a25f4b04d49d22b6';
+String _$followingHash() => r'1ac34721576fc08b19b52c4c5211a07bb7e1cee6';
 
 abstract class _$Following extends $Notifier<FollowingState> {
   FollowingState build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<FollowingState, FollowingState>;
     final element =
         ref.element
@@ -57,6 +57,6 @@ abstract class _$Following extends $Notifier<FollowingState> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

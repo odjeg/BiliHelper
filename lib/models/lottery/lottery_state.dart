@@ -36,8 +36,6 @@ class LotteryState {
 
   LotteryState copyWith({
     LoadState? loadState,
-    LoadState? dynamicLoadState,
-    LoadState? replyLoadState,
     String? link,
     Map<String, bool>? lvFilter,
     String? keyWorldFilter,

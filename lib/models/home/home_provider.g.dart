@@ -40,13 +40,13 @@ final class HomeProvider extends $NotifierProvider<Home, HomeState> {
   }
 }
 
-String _$homeHash() => r'15776ebfc5b1292851738869d8deeab231f73429';
+String _$homeHash() => r'93715b074afb19963a18f07582351f6de1fb58c5';
 
 abstract class _$Home extends $Notifier<HomeState> {
   HomeState build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<HomeState, HomeState>;
     final element =
         ref.element
@@ -56,6 +56,6 @@ abstract class _$Home extends $Notifier<HomeState> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
