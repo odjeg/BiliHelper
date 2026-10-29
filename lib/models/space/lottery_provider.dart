@@ -115,7 +115,7 @@ class Lottery extends _$Lottery {
     String? csrf = await SecureStorageService.getToken('bili_jct');
 
     for (var item in UserModel().lotteryItems) {
-      Response<dynamic> dynamicDetailResponseData;
+      late Response<dynamic> dynamicDetailResponseData;
       try {
         dynamicDetailResponseData = await DynamicApi.getDynamicDetail2(
           queryParameters: {'id': item.businessId},
@@ -126,7 +126,7 @@ class Lottery extends _$Lottery {
           log('抽奖信息请求已取消: $e', error: e);
           return;
         }
-        rethrow; // 其他 Dio 错误继续抛出，交由外层 catch 处理
+        continue;
       }
 
       if (cancelToken.isCancelled) break;
